@@ -1,0 +1,1 @@
+ast_obj += AST/ast.o
