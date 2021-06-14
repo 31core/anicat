@@ -1,5 +1,6 @@
 include AST/Makefile
 include Program/Makefile
+include Parser/Makefile
 
 C_FLAGS = -Iinclude
 
