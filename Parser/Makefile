@@ -1,1 +1,1 @@
-ast_obj += Parser/format.o
+ast_obj += Parser/format.o Parser/parser.o
