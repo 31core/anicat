@@ -72,8 +72,28 @@ int scan_code(struct token *tk, char *code)
 
 		code[p] = '\0';
 		strcpy(tk[iter].name, code);
+		tk[iter].type = TOKEN_TYPE_UNKOWN;
 		iter += 1;
 		code += p + 1;
 	}
-	return iter + 1;
+	int i = 0;
+	for(; i < iter + 1; i++)
+	{
+		if(tk[i].type == TOKEN_TYPE_UNKOWN)
+		{
+			tk[i].type = TOKEN_TYPE_NAME;
+			/* 检查是否为关键字 */
+			int index = 0;
+			char *keywords[] = {KEYWORDS};
+			for(; index < 10; index++)
+			{
+				if(strcmp(tk[i].name, keywords[index]) == 0)
+				{
+					tk[i].type = TOKEN_TYPE_KEYWORD;
+					break;
+				}
+			}
+		}
+	}
+	return iter + 1; // 返回token个数
 }
