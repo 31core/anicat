@@ -9,6 +9,8 @@ all:$(ast_obj) $(program_obj)
 
 %.o:%.c
 	gcc $(C_FLAGS) -c $*.c -o $*.o
-
+run:
+	make all
+	./Anicat
 clean:
 	rm $(ast_obj) $(program_obj)
