@@ -9,6 +9,10 @@
 #define TOKEN_TYPE_RS_BKT 8 // )
 #define TOKEN_TYPE_RM_BKT 9 // ]
 #define TOKEN_TYPE_RL_BKT 10 // }
+#define TOKEN_TYPE_ADD 11
+#define TOKEN_TYPE_SUB 12
+#define TOKEN_TYPE_MUL 13
+#define TOKEN_TYPE_DIV 14
 
 struct token
 {
