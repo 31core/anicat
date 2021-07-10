@@ -3,9 +3,10 @@
 #include <Program/keywords.h>
 
 /* 获取标识符位置,以识别语句类型 */
-static int get_next_flag(char *str)
+static int get_flag_pos(int ret[], char *str)
 {
 	int i = 0;
+	int size = 1;
 	char *symbol = " =(),:+-*/";
 	while(str[i] != '\0')
 	{
@@ -13,87 +14,43 @@ static int get_next_flag(char *str)
 		{
 			if(str[i] == symbol[j])
 			{
-				return i;
+				ret[size] = i;
+				size += 1;
 			}
 		}
 		i += 1;
 	}
-	return -1;
+	ret[0] = -1;
+	ret[size] = strlen(str) + 1;
+	return size + 1;
 }
 /* 词法分析 */
 int scan_code(struct token *tk, char *code)
 {
-	int p = 0;
-	int iter = 0;
-	while(code[p] != '\0')
-	{
-		p = get_next_flag(code);
-		/* 分析符号 */
-		if(code[p] == '=')
-		{
-			tk[iter + 1].type = TOKEN_TYPE_EQU;
-			iter += 1;
-		}
-		else if(code[p] == ':')
-		{
-			tk[iter + 1].type = TOKEN_TYPE_EXPLAIN;
-			iter += 1;
-		}
-		else if(code[p] == '(')
-		{
-			tk[iter + 1].type = TOKEN_TYPE_LS_BKT;
-			iter += 1;
-		}
-		else if(code[p] == '[')
-		{
-			tk[iter + 1].type = TOKEN_TYPE_LM_BKT;
-			iter += 1;
-		}
-		else if(code[p] == '{')
-		{
-			tk[iter + 1].type = TOKEN_TYPE_LL_BKT;
-			iter += 1;
-		}
-		else if(code[p] == ')')
-		{
-			tk[iter + 1].type = TOKEN_TYPE_RS_BKT;
-			iter += 1;
-		}
-		else if(code[p] == ']')
-		{
-			tk[iter + 1].type = TOKEN_TYPE_RM_BKT;
-			iter += 1;
-		}
-		else if(code[p] == '}')
-		{
-			tk[iter + 1].type = TOKEN_TYPE_RL_BKT;
-			iter += 1;
-		}
-
-		code[p] = '\0';
-		strcpy(tk[iter].name, code);
-		tk[iter].type = TOKEN_TYPE_UNKOWN;
-		iter += 1;
-		code += p + 1;
-	}
 	int i = 0;
-	for(; i < iter + 1; i++)
+	int symbol_list[10];
+	int iter = 0;
+	int size = get_flag_pos(symbol_list, code);
+	char tmp_code[20];
+	for(i = 1; i < size; i++)
 	{
-		if(tk[i].type == TOKEN_TYPE_UNKOWN)
+		if(symbol_list[i] - symbol_list[i - 1] == 1)
 		{
-			tk[i].type = TOKEN_TYPE_NAME;
-			/* 检查是否为关键字 */
-			int index = 0;
-			char *keywords[] = {KEYWORDS};
-			for(; index < 10; index++)
-			{
-				if(strcmp(tk[i].name, keywords[index]) == 0)
-				{
-					tk[i].type = TOKEN_TYPE_KEYWORD;
-					break;
-				}
-			}
+			tk[iter].name[0] = code[symbol_list[i]];
+			tk[iter].name[1] = '\0';
 		}
+		else
+		{
+			strcpy(tmp_code, code);
+			tmp_code[symbol_list[i]] = '\0';
+			strcpy(tk[iter].name, tmp_code + symbol_list[i - 1] + 1);
+
+			tk[iter + 1].name[0] = code[symbol_list[i]];
+			tk[iter + 1].name[1] = '\0';
+			iter += 1;
+		}
+		iter += 1;
 	}
-	return iter + 1; // 返回token个数
+	return iter - 1;
+
 }
