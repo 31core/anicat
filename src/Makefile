@@ -1,0 +1,1 @@
+objs += src/main.o src/format.o src/scanner.o src/debug.o  src/ast.o

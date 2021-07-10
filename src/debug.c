@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <Parser/token.h>
+#include <token.h>
 
 void print_koken(struct token tk)
 {

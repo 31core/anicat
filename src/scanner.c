@@ -1,6 +1,6 @@
 #include <string.h>
-#include <Parser/token.h>
-#include <Program/keywords.h>
+#include <token.h>
+#include <keywords.h>
 
 /* 获取标识符位置,以识别语句类型 */
 static int get_flag_pos(int ret[], char *str)
@@ -34,6 +34,7 @@ int scan_code(struct token *tk, char *code)
 	char tmp_code[20];
 	for(i = 1; i < size; i++)
 	{
+		/* 单符号 */
 		if(symbol_list[i] - symbol_list[i - 1] == 1)
 		{
 			tk[iter].name[0] = code[symbol_list[i]];
