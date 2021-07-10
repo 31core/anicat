@@ -1,2 +1,2 @@
-char *keywords[] = {"var", "func", "return", "if", "elif", "else", "for", "while", "break",\
-"continue"};
+#define KEYWORDS "var", "func", "return", "if", "elif", "else", "for", "while", "break",\
+"continue"
