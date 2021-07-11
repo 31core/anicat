@@ -80,6 +80,18 @@ int scan_code(struct token *tk, char *code)
 		}
 		iter += 1;
 	}
+	/* 删除空格token */
+	for(i = 0; i < iter - 1; i++)
+	{
+		if(tk[i].name[0] == ' ')
+		{
+			for(int j = i; j < iter - 1; j++)
+			{
+				tk[j] = tk[j + 1];
+			}
+			iter -= 1;
+		}
+	}
 	/* 确定每个token的type */
 	for(i = 0; i < iter - 1; i++)
 	{
@@ -141,6 +153,10 @@ int scan_code(struct token *tk, char *code)
 			else if(tk[i].name[0] == '}')
 			{
 				tk[i].type = TOKEN_TYPE_RL_BKT;
+			}
+			else if(tk[i].name[0] == ',')
+			{
+				tk[i].type = TOKEN_TYPE_SPLIT;
 			}
 		}
 	}

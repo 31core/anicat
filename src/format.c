@@ -28,12 +28,13 @@ void format_code(char *ret, const char *code)
 	/* 正则表达式匹配字符 */
 	char *pattern[] = {"\\s*=\\s*", "\\s*\\+\\s*", "\\s*-\\s*", "\\s*\\*\\s*", "\\s*/\\s*",\
 	"\\s*==\\s*", "\\s*!=\\s*", "\\s*<=\\s*", "\\s*>=\\s*", "\\s*:\\s*", "\\s*->\\s*",\
-	"\\s*\\(\\s*", "\\s*\\)\\s*"};
+	"\\s*\\(\\s*", "\\s*\\)\\s*", "\\s*,\\s*", "\\s+"};
 	/* 替换成的字符 */
-	char *target[] = {"=", "+", "-", "*", "/", "==", "!=", "<=", ">=", ":", "->", "(", ")"};
+	char *target[] = {"=", "+", "-", "*", "/", "==", "!=", "<=", ">=", ":", "->", "(", ")",
+	",", " "};
 	char tmp_code[100];
 	strcpy(tmp_code, code);
-	for(int index = 0; index < 11; index++)
+	for(int index = 0; index < 15; index++)
 	{
 		for(int i = 0; i < LOOP_TIME; i++)
 		{
