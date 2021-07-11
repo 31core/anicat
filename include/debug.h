@@ -1,1 +1,1 @@
-void print_koken(struct token);
+void print_token(struct token);

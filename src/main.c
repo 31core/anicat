@@ -10,5 +10,5 @@ int main()
 	int num = scan_code(&tk, str);
 	int i = 0;
 	for(; i < num; i++)
-	print_koken(tk[i]);
+	print_token(tk[i]);
 }
