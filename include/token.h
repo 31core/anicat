@@ -14,6 +14,7 @@
 #define TOKEN_TYPE_MUL 13
 #define TOKEN_TYPE_DIV 14
 #define TOKEN_TYPE_NUMBER 15
+#define TOKEN_TYPE_SPLIT 16
 
 struct token
 {
