@@ -1,4 +1,4 @@
-#include <ast.h>
+#include <src/ast.h>
 
 void ast_init(struct ast_node *ast)
 {

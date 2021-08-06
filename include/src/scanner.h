@@ -1,0 +1,1 @@
+int scan_code(struct token*, char*);
