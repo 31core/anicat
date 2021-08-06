@@ -1,7 +1,7 @@
 #include <string.h>
 #include <ctype.h>
-#include <token.h>
-#include <keywords.h>
+#include <src/token.h>
+#include <src/keywords.h>
 
 /* 获取标识符位置,以识别语句类型 */
 static int get_flag_pos(int ret[], char *str)
