@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <src/token.h>
+//#include <src/token.h>
 #include <src/ast.h>
 
 /* 打印token */
@@ -33,9 +33,9 @@ static void print_ast_tree_sub(struct ast_node *node, int re)
 {
 	print_ast(node, re);
 	int i = 0;
-	while(node->node[i] != NULL)
+	while(node->nodes[i] != 0)
 	{
-		print_ast_tree_sub(node->node[i], re + 1);
+		print_ast_tree_sub(node->nodes[i], re + 1);
 		i += 1;
 	}
 }
