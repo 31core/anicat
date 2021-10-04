@@ -28,7 +28,7 @@ static int get_flag_pos(int ret[], char *str)
 /* 检测是否为关键字 */
 static int is_keyword(char *str)
 {
-	char *kyewords[] = {KEYWORDS};
+	char *kyewords[] = {KEYWORDS}; //关键字数组
 	for(int i = 0; i < KEYWORDS_COUNT; i++)
 	{
 		if(strcmp(str, kyewords[i]) == 0)
@@ -161,5 +161,4 @@ int scan_code(struct token *tk, char *code)
 		}
 	}
 	return iter - 1;
-
 }

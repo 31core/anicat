@@ -13,3 +13,4 @@ run:
 	./Anicat
 clean:
 	rm $(objs)
+	rm Anicat
