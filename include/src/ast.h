@@ -5,10 +5,10 @@
 struct ast_node
 {
 	int type;
-	char name[20];
+	char data[20];
 	struct ast_node *nodes[100];
 };
 
 void ast_node_init(struct ast_node*);
 void ast_node_manage_init();
-void ast_tree_build(struct ast_node*, struct token*, int);
+void ast_tree_build(struct ast_node*, struct token*);

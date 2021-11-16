@@ -57,16 +57,16 @@ void ast_node_append(struct ast_node *ast, struct ast_node *target, int p)
     ast->nodes[p + 1] = 0;
 }
 /* 组建AST树 */
-void ast_tree_build(struct ast_node *ast, struct token tk[], int tk_count)
+void ast_tree_build(struct ast_node *ast, struct token tk[])
 {
 	int i = 0;
-	for(; i < tk_count; i++)
+	while(tk[i].type != TOKEN_TYPE_UNKOWN)
 	{
         /* 函数定义 */
 		if(tk[i].type == TOKEN_TYPE_KEYWORD && strcmp(tk[i].name, "func") == 0)
 		{
 			ast->type = AST_TYPE_DEFFUNC;
-			strcpy(ast->name, tk[i + 1].name);
+			strcpy(ast->data, tk[i + 1].name);
             /* 分配一个PARAMS */
             ast_node_append(ast, ast_node_manage_alloc(), 0);
             ast->nodes[0]->type = AST_TYPE_PARAMS;
@@ -75,5 +75,19 @@ void ast_tree_build(struct ast_node *ast, struct token tk[], int tk_count)
             ast->nodes[1]->type = AST_TYPE_CODE_BLOCK;
 			i += 1;
 		}
+        /* 函数定义 */
+		if(tk[i].type == TOKEN_TYPE_KEYWORD && strcmp(tk[i].name, "var") == 0)
+		{
+			ast->type = AST_TYPE_VARIABLE_DECLARING;
+            /* 分配一个NAME */
+            ast_node_append(ast, ast_node_manage_alloc(), 0);
+            ast->nodes[0]->type = AST_TYPE_VARIABLE_NAME;
+            /* 分配一个VALUE */
+            ast_node_append(ast, ast_node_manage_alloc(), 1);
+            ast->nodes[1]->type = AST_TYPE_VARIABLE_VALUE;
+
+            strcpy(ast->nodes[0]->data, tk[i + 1].name);
+		}
+        i += 1;
 	}
 }

@@ -8,10 +8,20 @@ void print_token(struct token tk)
 	printf("Name: \"%s\"\n", tk.name);
 	printf("Type: %d\n", tk.type);
 }
+/* 打印tokens */
+void print_tokens(struct token *tk)
+{
+	int i = 0;
+	while(tk[i].type != 0)
+	{
+		print_token(tk[i]);
+		i += 1;
+	}
+}
 /* 打印AST节点 */
 void print_ast_node(struct ast_node *node)
 {
-	printf("Name: %s\n", node->name);
+	printf("Data: %s\n", node->data);
 	printf("Type: %d\n", node->type);
 }
 /* 打印AST */
@@ -21,7 +31,7 @@ static void print_ast(struct ast_node *node, int tab)
 	{
 		printf("--");
 	}
-	printf("Name: %s\n", node->name);
+	printf("Data: %s\n", node->data);
 	for(int j = 0; j < tab; j++)
 	{
 		printf("--");
