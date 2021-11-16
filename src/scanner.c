@@ -90,6 +90,7 @@ int scan_code(struct token *tk, char *code)
 				tk[j] = tk[j + 1];
 			}
 			iter -= 1;
+			i -= 1;
 		}
 	}
 	/* 确定每个token的type */
