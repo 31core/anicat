@@ -160,5 +160,5 @@ int scan_code(struct token *tk, char *code)
 			}
 		}
 	}
-	return iter - 1;
+	tk[iter - 1].type = TOKEN_TYPE_UNKOWN;
 }
