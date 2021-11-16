@@ -1,1 +1,0 @@
-void format_code(char*, const char*);

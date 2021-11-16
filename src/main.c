@@ -2,16 +2,15 @@
 //#include <src/token.h>
 #include <src/ast.h>
 #include <src/debug.h>
-#include <src/format.h>
 #include <src/scanner.h>
 
 int main()
 {
     ast_node_manage_init();
 
-    char code[100];
+    char *code = "var s = 0";
     struct token tk[100];
-    format_code(code, "var s = 0");
+
     scan_code(tk, code);
     print_tokens(tk);
     
