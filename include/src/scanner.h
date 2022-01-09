@@ -1,1 +1,1 @@
-int scan_code(struct token*, char*);
+void scan_code(struct token*, char*);

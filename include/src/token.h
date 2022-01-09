@@ -21,3 +21,5 @@ struct token
 	int type;
 	char name[20];
 };
+
+typedef struct token TOKEN;
