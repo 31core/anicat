@@ -31,7 +31,7 @@ static int is_keyword(char *str)
 	char *kyewords[] = {KEYWORDS}; //关键字数组
 	for(int i = 0; i < KEYWORDS_COUNT; i++)
 	{
-		if(strcmp(str, kyewords[i]) == 0)
+		if(!strcmp(str, kyewords[i]))
 		{
 			return 1;
 		}
@@ -44,7 +44,7 @@ static int is_number(char *str)
 	int i = 0;
 	while(str[i] != '\0')
 	{
-		if(isdigit(str[i]) == 0)
+		if(!isdigit(str[i]))
 		{
 			return 0;
 		}
@@ -97,11 +97,11 @@ int scan_code(struct token *tk, char *code)
 	for(i = 0; i < iter - 1; i++)
 	{
 		tk[i].type = TOKEN_TYPE_NAME;
-		if(is_keyword(tk[i].name) == 1)
+		if(is_keyword(tk[i].name))
 		{
 			tk[i].type = TOKEN_TYPE_KEYWORD;
 		}
-		else if(is_number(tk[i].name) == 1)
+		else if(is_number(tk[i].name))
 		{
 			tk[i].type = TOKEN_TYPE_NUMBER;
 		}
