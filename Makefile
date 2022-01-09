@@ -8,7 +8,7 @@ all:$(objs)
 
 %.o:%.c
 	$(CC) $(C_FLAGS) -c $*.c -o $*.o
-run:
+test:
 	make all
 	./Anicat
 clean:
