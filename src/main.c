@@ -4,7 +4,7 @@
 #include <src/debug.h>
 #include <src/scanner.h>
 
-int main()
+int main(void)
 {
 	ast_node_manage_init();
 

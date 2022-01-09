@@ -23,5 +23,5 @@ struct ast_node
 };
 
 void ast_node_init(struct ast_node*);
-void ast_node_manage_init();
+void ast_node_manage_init(void);
 void ast_tree_build(struct ast_node*, struct token*);

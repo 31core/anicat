@@ -9,23 +9,22 @@ struct ast_node *node_layer[100];
 void ast_node_init(struct ast_node *ast)
 {
 	ast->type = 0;
-	int i = 0;
-	for(; i < 100; i++)
+
+	for(int i = 0; i < 100; i++)
 	{
 		ast->nodes[i] = 0;
 	}
 }
 
-void ast_node_manage_init()
+void ast_node_manage_init(void)
 {
-	int i = 0;
-	for(; i < 1024; i++)
+	for(int i = 0; i < 1024; i++)
 	{
 		ast_nodes[i].type = -1;
 	}
 }
 
-struct ast_node* ast_node_manage_alloc()
+struct ast_node* ast_node_manage_alloc(void)
 {
 	int i = 0;
 	for(; i < 1024; i++)
@@ -63,7 +62,7 @@ void ast_tree_build(struct ast_node *ast, struct token tk[])
 	while(tk[i].type != TOKEN_TYPE_UNKOWN)
 	{
 		/* 函数定义 */
-		if(tk[i].type == TOKEN_TYPE_KEYWORD && strcmp(tk[i].name, "func") == 0)
+		if(tk[i].type == TOKEN_TYPE_KEYWORD && !strcmp(tk[i].name, "func"))
 		{
 			ast->type = AST_TYPE_FUNC_DEF;
 			strcpy(ast->data, tk[i + 1].name);
@@ -81,7 +80,7 @@ void ast_tree_build(struct ast_node *ast, struct token tk[])
 			i += 1;
 		}
 		/* 函数定义 */
-		else if(tk[i].type == TOKEN_TYPE_KEYWORD && strcmp(tk[i].name, "var") == 0)
+		else if(tk[i].type == TOKEN_TYPE_KEYWORD && !strcmp(tk[i].name, "var"))
 		{
 			ast->type = AST_TYPE_VAR;
 			ast_node_append(ast, ast_node_manage_alloc(), 0); //NAME
