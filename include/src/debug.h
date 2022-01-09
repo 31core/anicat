@@ -1,4 +1,4 @@
-void print_token(struct token);
-void print_tokens(struct token*);
-void print_ast_node(struct ast_node*);
-void print_ast_tree(struct ast_node*);
+void print_token(TOKEN);
+void print_tokens(TOKEN*);
+void print_ast_node(AST_NODE*);
+void print_ast_tree(AST_NODE*);

@@ -53,7 +53,7 @@ static int is_number(char *str)
 	return 1;
 }
 /* 词法分析 */
-int scan_code(struct token *tk, char *code)
+void scan_code(TOKEN *tk, char *code)
 {
 	int i = 0;
 	int symbol_list[10];
