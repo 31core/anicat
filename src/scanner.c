@@ -8,10 +8,10 @@ static int get_flag_pos(int ret[], char *str)
 {
 	int i = 0;
 	int size = 1;
-	char *symbol = " =(),:+-*/";
+	char *symbol = " =()[]{},:+-*/";
 	while(str[i] != '\0')
 	{
-		for(int j = 0; j < strlen(symbol) + 1; j++)
+		for(int j = 0; j < strlen(symbol); j++)
 		{
 			if(str[i] == symbol[j])
 			{
@@ -53,14 +53,13 @@ static int is_number(char *str)
 	return 1;
 }
 /* 词法分析 */
-void scan_code(TOKEN *tk, char *code)
+void scan_code(TOKEN tk[], char *code)
 {
-	int i = 0;
-	int symbol_list[10];
+	int symbol_list[100];
 	int iter = 0;
 	int size = get_flag_pos(symbol_list, code); //获取每个分隔符位置
-	char tmp_code[20];
-	for(i = 1; i < size; i++)
+	char tmp_code[1024];
+	for(int i = 1; i < size; i++)
 	{
 		/* 单符号 */
 		if(symbol_list[i] - symbol_list[i - 1] == 1)
@@ -81,7 +80,7 @@ void scan_code(TOKEN *tk, char *code)
 		iter += 1;
 	}
 	/* 删除空格token */
-	for(i = 0; i < iter - 1; i++)
+	for(int i = 0; i < iter - 1; i++)
 	{
 		if(tk[i].name[0] == ' ')
 		{
@@ -94,7 +93,7 @@ void scan_code(TOKEN *tk, char *code)
 		}
 	}
 	/* 确定每个token的type */
-	for(i = 0; i < iter - 1; i++)
+	for(int i = 0; i < iter - 1; i++)
 	{
 		tk[i].type = TOKEN_TYPE_NAME;
 		if(is_keyword(tk[i].name))

@@ -4,7 +4,7 @@
 //#include <src/token.h>
 
 struct ast_node *ast_nodes;
-struct ast_node *node_layer[100];
+//struct ast_node *node_layer[100];
 
 /* 初始化AST node */
 void ast_node_init(AST_NODE *ast)
@@ -41,8 +41,7 @@ AST_NODE* ast_node_manage_alloc(void)
 
 void ast_node_manage_free(AST_NODE *node)
 {
-	int i = 0;
-	for(; i < 1024; i++)
+	for(int i = 0; i < 1024; i++)
 	{
 		if(&ast_nodes[i] == node)
 		{
@@ -58,8 +57,10 @@ void ast_node_append(AST_NODE *ast, AST_NODE *target, int p)
 	ast->nodes[p + 1] = 0;
 }
 /* 组建AST树 */
-void ast_tree_build(AST_NODE *ast, struct token tk[])
+void ast_tree_build(AST_NODE *ast, TOKEN tk[])
 {
+	AST_NODE *node_layer[100];
+	int node_layer_position = 0;
 	int i = 0;
 	while(tk[i].type != TOKEN_TYPE_UNKOWN)
 	{
@@ -95,6 +96,31 @@ void ast_tree_build(AST_NODE *ast, struct token tk[])
 				strcpy(ast->nodes[0]->data, tk[i + 1].name);
 				strcpy(ast->nodes[1]->data, tk[i + 3].name);
 			}
+		}
+		else if(tk[i].type == TOKEN_TYPE_LS_BKT)
+		{
+			node_layer[node_layer_position] = ast;
+			node_layer_position += 1;
+			if(ast->type == AST_TYPE_FUNC_DEF)
+			{
+				ast = ast->nodes[1];
+			}
+		}
+		else if(tk[i].type == TOKEN_TYPE_LL_BKT)
+		{
+			node_layer[node_layer_position] = ast;
+			node_layer_position += 1;
+			if(ast->type == AST_TYPE_FUNC_DEF)
+			{
+				ast = ast->nodes[2];
+			}
+		}
+		else if(tk[i].type == TOKEN_TYPE_RS_BKT ||
+		tk[i].type == TOKEN_TYPE_RM_BKT ||
+		tk[i].type == TOKEN_TYPE_RL_BKT)
+		{
+			node_layer_position -= 1;
+			ast = node_layer[node_layer_position];
 		}
 		i += 1;
 	}
