@@ -52,5 +52,5 @@ static void print_ast_tree_sub(AST_NODE *node, int re)
 /* 打印AST树 */
 void print_ast_tree(AST_NODE *node)
 {
-	 print_ast_tree_sub(node, 0);
+	print_ast_tree_sub(node, 0);
 }

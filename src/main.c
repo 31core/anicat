@@ -8,7 +8,7 @@ int main(void)
 {
 	ast_node_manage_init();
 
-	char *code = "var s: String";
+	char *code = "func s(var s:s)";
 	struct token tk[100];
 
 	scan_code(tk, code);
