@@ -8,7 +8,7 @@ static int get_flag_pos(int ret[], char *str)
 {
 	int i = 0;
 	int size = 1;
-	char *symbol = " =()[]{},:+-*/";
+	char *symbol = " =()[]{},:;+-*/";
 	while(str[i] != '\0')
 	{
 		for(int j = 0; j < strlen(symbol); j++)
@@ -154,7 +154,7 @@ void scan_code(TOKEN tk[], char *code)
 			{
 				tk[i].type = TOKEN_TYPE_RL_BKT;
 			}
-			else if(tk[i].name[0] == ',')
+			else if(tk[i].name[0] == ',' || tk[i].name[0] == ';')
 			{
 				tk[i].type = TOKEN_TYPE_SPLIT;
 			}
