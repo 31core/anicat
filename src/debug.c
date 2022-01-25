@@ -4,7 +4,7 @@
 /* 打印token */
 void print_token(TOKEN tk)
 {
-	printf("Name: %s\n", tk.name);
+	printf("Name: \"%s\"\n", tk.name);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_UNKOWN);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_NAME);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_KEYWORD);
@@ -58,7 +58,7 @@ static void print_ast(AST_NODE *node, int tab)
 	{
 		printf(" --");
 	}
-	printf("Data: %s\n", node->data);
+	printf("Data: \"%s\"\n", node->data);
 }
 /* 打印AST树 */
 static void print_ast_tree_sub(AST_NODE *node, int re)

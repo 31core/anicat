@@ -3,7 +3,7 @@
 #include <src/ast.h>
 
 struct ast_node *ast_nodes;
-//struct ast_node *node_layer[100];
+int ast_node_buf_size = 1024;
 
 /* 初始化AST node */
 void ast_node_init(AST_NODE *ast)
@@ -15,20 +15,21 @@ void ast_node_init(AST_NODE *ast)
 		ast->nodes[i] = 0;
 	}
 }
-
+/* 初始化AST管理 */
 void ast_node_manage_init(void)
 {
-	ast_nodes = malloc(sizeof(AST_NODE) * 1024);
-	for(int i = 0; i < 1024; i++)
+	ast_nodes = malloc(sizeof(AST_NODE) * ast_node_buf_size);
+	for(int i = 0; i < ast_node_buf_size; i++)
 	{
 		ast_nodes[i].type = -1;
 	}
 }
-
+/* 分配一个AST node */
 AST_NODE* ast_node_manage_alloc(void)
 {
-	int i = 0;
-	for(; i < 1024; i++)
+	int i = 0；
+	_ast_node_manage_alloc_start:
+	for(; i < ast_node_buf_size; i++)
 	{
 		if(ast_nodes[i].type == -1)
 		{
@@ -36,11 +37,15 @@ AST_NODE* ast_node_manage_alloc(void)
 			return &(ast_nodes[i]);
 		}
 	}
+	/* ast_nodes满了, 重新分配内存 */
+	ast_node_buf_size += 1024;
+	ast_nodes = realloc(ast_nodes, ast_node_buf_size);
+	goto _ast_node_manage_alloc_start;
 }
-
+/* 释放AST node */
 void ast_node_manage_free(AST_NODE *node)
 {
-	for(int i = 0; i < 1024; i++)
+	for(int i = 0; i < ast_node_buf_size; i++)
 	{
 		if(&ast_nodes[i] == node)
 		{
