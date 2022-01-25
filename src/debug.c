@@ -1,12 +1,27 @@
 #include <stdio.h>
-//#include <src/token.h>
 #include <src/ast.h>
 
 /* 打印token */
 void print_token(TOKEN tk)
 {
-	printf("Name: \"%s\"\n", tk.name);
-	printf("Type: %d\n", tk.type);
+	printf("Name: %s\n", tk.name);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_UNKOWN);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_NAME);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_KEYWORD);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_EQU);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_EXPLAIN);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_LS_BKT);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_LM_BKT);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_LL_BKT);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_RS_BKT);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_RM_BKT);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_RL_BKT);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_ADD);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_SUB);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_MUL);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_DIV);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_NUMBER);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_SPLIT);
 }
 /* 打印tokens */
 void print_tokens(TOKEN *tk)
@@ -18,12 +33,6 @@ void print_tokens(TOKEN *tk)
 		i += 1;
 	}
 }
-/* 打印AST节点 */
-void print_ast_node(AST_NODE *node)
-{
-	printf("Type: %d\n", node->type);
-	printf("Data: %s\n", node->data);
-}
 /* 打印AST */
 static void print_ast(AST_NODE *node, int tab)
 {
@@ -31,7 +40,20 @@ static void print_ast(AST_NODE *node, int tab)
 	{
 		printf("`--");
 	}
-	printf("Type: %d\n", node->type);
+	PRINT_TYPE(node->type, AST_TYPE_UNDEFINED);
+	PRINT_TYPE(node->type, AST_TYPE_PROGRAM);
+	PRINT_TYPE(node->type, AST_TYPE_NAME);
+	PRINT_TYPE(node->type, AST_TYPE_VAR_DECLEAR);
+	PRINT_TYPE(node->type, AST_TYPE_VAR_TYPE);
+	PRINT_TYPE(node->type, AST_TYPE_VAR_SET_VALUE);
+	PRINT_TYPE(node->type, AST_TYPE_VAR_COMPARE);
+	PRINT_TYPE(node->type, AST_TYPE_VAR_GET_VALUE);
+	PRINT_TYPE(node->type, AST_TYPE_FUNC_DEF);
+	PRINT_TYPE(node->type, AST_TYPE_FUNC_CALL);
+	PRINT_TYPE(node->type, AST_TYPE_CODE_BLOCK);
+	PRINT_TYPE(node->type, AST_TYPE_PARAMS);
+	PRINT_TYPE(node->type, AST_TYPE_IF);
+	PRINT_TYPE(node->type, AST_TYPE_EXPRESS);
 	for(int j = 0; j < tab; j++)
 	{
 		printf(" --");

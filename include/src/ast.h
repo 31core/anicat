@@ -12,7 +12,10 @@
 #define AST_TYPE_FUNC_CALL		9
 #define AST_TYPE_CODE_BLOCK		10
 #define AST_TYPE_PARAMS			11
+#define AST_TYPE_IF				12
+#define AST_TYPE_EXPRESS		13
 
+#define PRINT_TYPE(x, type) if(x == type) {printf("Type: "#type"\n");} 
 /* AST节点 */
 struct ast_node
 {
