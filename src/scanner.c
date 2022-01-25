@@ -8,7 +8,7 @@ static int get_flag_pos(int ret[], char *str)
 {
 	int i = 0;
 	int size = 1;
-	char *symbol = " =()[]{},:;+-*/";
+	char *symbol = " =()[]{},:;+-*/\t\n";
 	while(str[i] != '\0')
 	{
 		for(int j = 0; j < strlen(symbol); j++)
@@ -82,7 +82,7 @@ void scan_code(TOKEN tk[], char *code)
 	/* 删除空格token */
 	for(int i = 0; i < iter - 1; i++)
 	{
-		if(tk[i].name[0] == ' ')
+		if(tk[i].name[0] == ' ' || tk[i].name[0] == '\t' || tk[i].name[0] == '\n')
 		{
 			for(int j = i; j < iter - 1; j++)
 			{
