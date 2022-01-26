@@ -27,7 +27,7 @@ void ast_node_manage_init(void)
 /* 分配一个AST node */
 AST_NODE* ast_node_manage_alloc(void)
 {
-	int i = 0；
+	int i = 0;
 	_ast_node_manage_alloc_start:
 	for(; i < ast_node_buf_size; i++)
 	{
