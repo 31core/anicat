@@ -68,13 +68,13 @@ struct layer
 };
 
 /* 组建AST树 */
-void ast_tree_build(AST_NODE *ast, TOKEN tk[])
+int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 {
-	AST_NODE *node_layer[100];
-	struct layer layers[100];
-	int p = -1;
-	int node_layer_position = 0;
 	int token_index = 0;
+	int ast_index = 0;
+	AST_NODE *ast;
+	ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
+	ast = top_ast->nodes[ast_index];
 	while(tk[token_index].type != TOKEN_TYPE_UNKOWN)
 	{
 		/* 函数定义 */
@@ -132,58 +132,37 @@ void ast_tree_build(AST_NODE *ast, TOKEN tk[])
 		}
 		else if(tk[token_index].type == TOKEN_TYPE_SPLIT)
 		{
-			ast_node_append(layers[p].node, ast_node_manage_alloc(), layers[p].potition);
-			ast = layers[p].node->nodes[layers[p].potition];
-			layers[p].potition += 1;
+			ast_index++;
+			ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
+			ast = top_ast->nodes[ast_index];
 		}
 		/* ( */
 		else if(tk[token_index].type == TOKEN_TYPE_LS_BKT)
 		{
-			p += 1;
-			node_layer[node_layer_position] = ast;
-			node_layer_position += 1;
 			if(ast->type == AST_TYPE_FUNC_DEF)
 			{
 				/* ast->nodes[1] is params block */
-				layers[p].node = ast->nodes[1];
-				layers[p].potition = 0;
-				ast_node_append(ast->nodes[1], ast_node_manage_alloc(), 0);
-				ast = ast->nodes[1]->nodes[0];
-				layers[p].potition += 1;
+				token_index += ast_tree_build(ast->nodes[1], &tk[token_index]);
+				
 			}
 			else if(ast->type == AST_TYPE_IF)
 			{
-				/* ast->nodes[0] is params block */
-				layers[p].node = ast->nodes[0];
-				layers[p].potition = 0;
-				ast_node_append(ast->nodes[0], ast_node_manage_alloc(), 0);
-				ast = ast->nodes[0]->nodes[0];
-				layers[p].potition += 1;
+				/* ast->nodes[0] is expression block */
+				token_index += ast_tree_build(ast->nodes[0], &tk[token_index]);
 			}
 		}
 		/* { */
 		else if(tk[token_index].type == TOKEN_TYPE_LL_BKT)
 		{
-			p += 1;
-			node_layer[node_layer_position] = ast;
-			node_layer_position += 1;
 			if(ast->type == AST_TYPE_FUNC_DEF)
 			{
 				/* ast->nodes[2] is code block */
-				layers[p].node = ast->nodes[2];
-				layers[p].potition = 0;
-				ast_node_append(ast->nodes[2], ast_node_manage_alloc(), 0);
-				ast = ast->nodes[2]->nodes[0];
-				layers[p].potition += 1;
+				token_index += ast_tree_build(ast->nodes[2], &tk[token_index]);
 			}
 			else if(ast->type == AST_TYPE_IF)
 			{
 				/* ast->nodes[1] is code block */
-				layers[p].node = ast->nodes[1];
-				layers[p].potition = 0;
-				ast_node_append(ast->nodes[1], ast_node_manage_alloc(), 0);
-				ast = ast->nodes[1]->nodes[0];
-				layers[p].potition += 1;
+				token_index += ast_tree_build(ast->nodes[1], &tk[token_index]);
 			}
 		}
 		/* right brackets */
@@ -191,9 +170,7 @@ void ast_tree_build(AST_NODE *ast, TOKEN tk[])
 		tk[token_index].type == TOKEN_TYPE_RM_BKT ||
 		tk[token_index].type == TOKEN_TYPE_RL_BKT)
 		{
-			p -= 1;
-			node_layer_position -= 1;
-			ast = node_layer[node_layer_position];
+			return token_index;
 		}
 		token_index += 1;
 	}

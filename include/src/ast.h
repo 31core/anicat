@@ -28,4 +28,4 @@ typedef struct ast_node AST_NODE;
 
 void ast_node_init(AST_NODE*);
 void ast_node_manage_init(void);
-void ast_tree_build(AST_NODE*, TOKEN*);
+int ast_tree_build(AST_NODE*, TOKEN*);
