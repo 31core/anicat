@@ -14,7 +14,11 @@
 #define AST_TYPE_PARAMS			11
 #define AST_TYPE_IF				12
 #define AST_TYPE_EXPRESS		13
-
+#define AST_TYPE_ADD			14
+#define AST_TYPE_SUB			15
+#define AST_TYPE_MUL			16
+#define AST_TYPE_DIV			17
+#define AST_TYPE_NUMBER			18
 #define PRINT_TYPE(x, type) if(x == type) {printf("Type: "#type"\n");} 
 /* AST节点 */
 struct ast_node

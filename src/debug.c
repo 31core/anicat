@@ -54,6 +54,11 @@ static void print_ast(AST_NODE *node, int tab)
 	PRINT_TYPE(node->type, AST_TYPE_PARAMS);
 	PRINT_TYPE(node->type, AST_TYPE_IF);
 	PRINT_TYPE(node->type, AST_TYPE_EXPRESS);
+	PRINT_TYPE(node->type, AST_TYPE_ADD);
+	PRINT_TYPE(node->type, AST_TYPE_SUB);
+	PRINT_TYPE(node->type, AST_TYPE_MUL);
+	PRINT_TYPE(node->type, AST_TYPE_DIV);
+	PRINT_TYPE(node->type, AST_TYPE_NUMBER);
 	for(int j = 0; j < tab; j++)
 	{
 		printf(" --");

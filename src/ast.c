@@ -119,16 +119,68 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 				ast->nodes[1]->type = AST_TYPE_CODE_BLOCK;
 			}
 		}
-		/* 函数调用 */
-		else if(tk[token_index].type == TOKEN_TYPE_NAME && tk[token_index + 1].type == TOKEN_TYPE_LS_BKT)
+		else if(tk[token_index].type == TOKEN_TYPE_NAME || tk[token_index].type == TOKEN_TYPE_NUMBER)
 		{
-			ast->type = AST_TYPE_FUNC_CALL;
-			ast_node_append(ast, ast_node_manage_alloc(), 0); //name
-			ast_node_append(ast, ast_node_manage_alloc(), 1); //params
-			ast->nodes[0]->type = AST_TYPE_NAME;
-			ast->nodes[1]->type = AST_TYPE_PARAMS;
+			/* 函数调用 */
+			if(tk[token_index + 1].type == TOKEN_TYPE_LS_BKT)
+			{
+				ast->type = AST_TYPE_FUNC_CALL;
+				ast_node_append(ast, ast_node_manage_alloc(), 0); //name
+				ast_node_append(ast, ast_node_manage_alloc(), 1); //params
+				ast->nodes[0]->type = AST_TYPE_NAME;
+				ast->nodes[1]->type = AST_TYPE_PARAMS;
 
-			strcpy(ast->nodes[0]->data, tk[token_index].name);
+				strcpy(ast->nodes[0]->data, tk[token_index].name);
+			}
+			/* 四则运算 */
+			else if(tk[token_index + 1].type == TOKEN_TYPE_ADD ||
+				tk[token_index + 1].type == TOKEN_TYPE_SUB ||
+				tk[token_index + 1].type == TOKEN_TYPE_MUL ||
+				tk[token_index + 1].type == TOKEN_TYPE_DIV)
+			{
+				ast->type = AST_TYPE_VAR_GET_VALUE;
+				ast_node_append(ast, ast_node_manage_alloc(), 0);
+				ast_node_append(ast, ast_node_manage_alloc(), 1);
+				ast_node_append(ast, ast_node_manage_alloc(), 2);
+
+				/* 前操作数 */
+				if(tk[token_index].type == TOKEN_TYPE_NAME)
+				{
+					ast->nodes[0]->type = AST_TYPE_NAME;
+				}
+				else if(tk[token_index].type == TOKEN_TYPE_NUMBER)
+				{
+					ast->nodes[0]->type = AST_TYPE_NUMBER;
+				}
+
+				/* 后操作数 */
+				if(tk[token_index + 2].type == TOKEN_TYPE_NAME)
+				{
+					ast->nodes[2]->type = AST_TYPE_NAME;
+				}
+				else if(tk[token_index + 2].type == TOKEN_TYPE_NUMBER)
+				{
+					ast->nodes[2]->type = AST_TYPE_NUMBER;
+				}
+
+				/* 运算符 */
+				if(tk[token_index + 1].type == TOKEN_TYPE_ADD)
+				{
+					ast->nodes[1]->type = AST_TYPE_ADD;
+				}
+				else if(tk[token_index + 1].type == TOKEN_TYPE_SUB)
+				{
+					ast->nodes[1]->type = AST_TYPE_SUB;
+				}
+				else if(tk[token_index + 1].type == TOKEN_TYPE_MUL)
+				{
+					ast->nodes[1]->type = AST_TYPE_MUL;
+				}
+				else
+				{
+					ast->nodes[1]->type = AST_TYPE_DIV;
+				}
+			}
 		}
 		else if(tk[token_index].type == TOKEN_TYPE_SPLIT)
 		{
@@ -139,7 +191,7 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 		/* ( */
 		else if(tk[token_index].type == TOKEN_TYPE_LS_BKT)
 		{
-			if(ast->type == AST_TYPE_FUNC_DEF)
+			if(ast->type == AST_TYPE_FUNC_DEF || ast->type == AST_TYPE_FUNC_CALL)
 			{
 				/* ast->nodes[1] is params block */
 				token_index += ast_tree_build(ast->nodes[1], &tk[token_index]);
