@@ -15,6 +15,7 @@
 #define TOKEN_TYPE_DIV		14 // /
 #define TOKEN_TYPE_NUMBER	15
 #define TOKEN_TYPE_SPLIT	16
+#define TOKEN_TYPE_ISEQU	17 // ==
 
 struct token
 {

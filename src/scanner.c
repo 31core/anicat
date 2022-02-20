@@ -55,7 +55,7 @@ static int is_number(char *str)
 /* 词法分析 */
 void scan_code(TOKEN tk[], char *code)
 {
-	int symbol_list[100];
+	int symbol_list[1024];
 	int iter = 0;
 	int size = get_flag_pos(symbol_list, code); //获取每个分隔符位置
 	char tmp_code[1024];
@@ -108,7 +108,20 @@ void scan_code(TOKEN tk[], char *code)
 		{
 			if(tk[i].name[0] == '=')
 			{
-				tk[i].type = TOKEN_TYPE_EQU;
+				/* == */
+				if(tk[i + 1].name[0] == '=')
+				{
+					tk[i].type = TOKEN_TYPE_ISEQU;
+					strcpy(tk[i].name, "==");
+					for(int j = i + 1; j < iter - 1; j++)
+					{
+						tk[j] = tk[j + 1];
+					}
+				}
+				else
+				{
+					tk[i].type = TOKEN_TYPE_EQU;
+				}
 			}
 			else if(tk[i].name[0] == ':')
 			{
