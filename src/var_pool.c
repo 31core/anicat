@@ -28,7 +28,7 @@ int var_pool_set_value(struct variable_pool *pool, char *name, void *data)
 {
 	for(int i = 0; i < POOL_SIZE; i++)
 	{
-		if(pool->vars[i] != NULL && !strcmp(pool->vars[i], name))
+		if(pool->vars[i] != NULL && !strcmp(pool->vars[i]->name, name))
 		{
 			pool->vars[i]->data = malloc(strlen(data + 1));
 			strcpy(pool->vars[i]->data, data);
