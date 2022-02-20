@@ -77,7 +77,7 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 	ast = top_ast->nodes[ast_index];
 	while(tk[token_index].type != TOKEN_TYPE_UNKOWN)
 	{
-		/* 函数定义 */
+		/* keywords */
 		if(tk[token_index].type == TOKEN_TYPE_KEYWORD)
 		{
 			/* 函数定义 */
@@ -182,6 +182,16 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 				{
 					ast->nodes[1]->type = AST_TYPE_DIV;
 				}
+			}
+			/* i = x */
+			else if(tk[token_index + 1].type == TOKEN_TYPE_EQU)
+			{
+				ast->type = AST_TYPE_VAR_SET_VALUE;
+				ast_node_append(ast, ast_node_manage_alloc(), 0);
+				ast_node_append(ast, ast_node_manage_alloc(), 1);
+
+				strcpy(ast->nodes[0]->data, tk[token_index].name);
+				strcpy(ast->nodes[1]->data, tk[token_index + 2].name);
 			}
 			/* <, >, ==, <=, >= */
 			else if(tk[token_index + 1].type == TOKEN_TYPE_LESS ||

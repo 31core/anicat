@@ -24,7 +24,7 @@ void execute_func(struct function *func)
 		if(ast->nodes[ast_index]->type == AST_TYPE_VAR_DECLEAR)
 		{
 			var_pool_append(&func->pool, ast->nodes[ast_index]->nodes[0]->data,
-				detect_type(ast->nodes[ast_index]->nodes[1]->data));
+				get_type_from_str(ast->nodes[ast_index]->nodes[1]->data));
 		}
 		else if(ast->nodes[ast_index]->type == AST_TYPE_FUNC_CALL)
 		{
@@ -36,6 +36,17 @@ void execute_func(struct function *func)
 				exception(EXCEPTION_UNDEFINED_FUNCTION, excp);
 			}
 			execute_func(func_ptr);
+		}
+		else if(ast->nodes[ast_index]->type == AST_TYPE_VAR_SET_VALUE)
+		{
+			if(detect_type(ast->nodes[ast_index]->nodes[1]->data) == VAR_TYPE_INT)
+			{
+				if(var_pool_set_value(&func->pool, ast->nodes[ast_index]->nodes[0]->data,
+					ast->nodes[ast_index]->nodes[1]->data))
+				{
+					exception(EXCEPTION_UNDEFINED_VARIABLE, "variable undecleared.");
+				}
+			}
 		}
 		ast_index++;
 	}

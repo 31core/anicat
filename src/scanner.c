@@ -1,7 +1,7 @@
 #include <string.h>
-#include <ctype.h>
 #include <src/token.h>
 #include <src/keywords.h>
+#include <lib/string.h>
 
 /* 获取标识符位置,以识别语句类型 */
 static int get_flag_pos(int ret[], char *str)
@@ -38,20 +38,7 @@ static int is_keyword(char *str)
 	}
 	return 0;
 }
-/* 检测是否为数字 */
-static int is_number(char *str)
-{
-	int i = 0;
-	while(str[i] != '\0')
-	{
-		if(!isdigit(str[i]))
-		{
-			return 0;
-		}
-		i += 1;
-	}
-	return 1;
-}
+
 /* 词法分析 */
 void scan_code(TOKEN tk[], char *code)
 {

@@ -13,6 +13,11 @@ int main(int argc, char *argv[])
 	ast_node_manage_init();
 
 	FILE *f = fopen(argv[1], "r");
+	if(f == NULL)
+	{
+		perror(argv[0]);
+		return -1;
+	}
 	char *code = malloc(1024);
 	int i = 0;
 	while(!feof(f))
