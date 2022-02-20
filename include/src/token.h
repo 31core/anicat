@@ -13,9 +13,13 @@
 #define TOKEN_TYPE_SUB		12 // -
 #define TOKEN_TYPE_MUL		13 // *
 #define TOKEN_TYPE_DIV		14 // /
-#define TOKEN_TYPE_NUMBER	15
-#define TOKEN_TYPE_SPLIT	16
-#define TOKEN_TYPE_ISEQU	17 // ==
+#define TOKEN_TYPE_GREATER	15 // /
+#define TOKEN_TYPE_LESS		16 // /
+#define TOKEN_TYPE_NUMBER	17
+#define TOKEN_TYPE_SPLIT	18
+#define TOKEN_TYPE_ISEQU	19 // ==
+#define TOKEN_TYPE_GREQU	20 // ==
+#define TOKEN_TYPE_LEEQU	21 // ==
 
 struct token
 {
