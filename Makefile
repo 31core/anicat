@@ -8,9 +8,11 @@ all:$(objs)
 
 %.o:%.c
 	$(CC) $(C_FLAGS) $*.c -o $*.o
-test:
+
+check:
 	make all
 	./Anicat
+
 clean:
 	rm $(objs)
 	rm Anicat

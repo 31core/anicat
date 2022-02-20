@@ -1,0 +1,12 @@
+func test(var i: Int)
+{
+	print("i");
+}
+
+func main()
+{
+	var i: Int;
+	i = 10; 
+	test(i);
+	print("Hello,world");
+}
