@@ -1,3 +1,4 @@
+#pragma once
 #include <src/ast.h>
 
 #define VAR_TYPE_INT 	1
@@ -8,6 +9,7 @@ struct variable
 {
 	char name[20];
 	int type;
+	void *data;
 };
 
 extern struct variable variables[1024];

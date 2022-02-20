@@ -183,7 +183,12 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 					ast->nodes[1]->type = AST_TYPE_DIV;
 				}
 			}
-			else if(tk[token_index + 1].type == TOKEN_TYPE_ISEQU)
+			/* <, >, ==, <=, >= */
+			else if(tk[token_index + 1].type == TOKEN_TYPE_LESS ||
+				tk[token_index + 1].type == TOKEN_TYPE_GREATER ||
+				tk[token_index + 1].type == TOKEN_TYPE_ISEQU ||
+				tk[token_index + 1].type == TOKEN_TYPE_LEEQU ||
+				tk[token_index + 1].type == TOKEN_TYPE_GREQU)
 			{
 				ast->type = AST_TYPE_VAR_COMPARE;
 				ast_node_append(ast, ast_node_manage_alloc(), 0);
@@ -213,9 +218,25 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 				}
 
 				/* 运算符 */
-				if(tk[token_index + 1].type == TOKEN_TYPE_ISEQU)
+				if(tk[token_index + 1].type == TOKEN_TYPE_LESS)
+				{
+					ast->nodes[1]->type = AST_TYPE_LE;
+				}
+				else if(tk[token_index + 1].type == TOKEN_TYPE_GREATER)
+				{
+					ast->nodes[1]->type = AST_TYPE_GR;
+				}
+				else if(tk[token_index + 1].type == TOKEN_TYPE_ISEQU)
 				{
 					ast->nodes[1]->type = AST_TYPE_EQU;
+				}
+				else if(tk[token_index + 1].type == TOKEN_TYPE_LEEQU)
+				{
+					ast->nodes[1]->type = AST_TYPE_LEEQU;
+				}
+				else
+				{
+					ast->nodes[1]->type = AST_TYPE_GREQU;
 				}
 			}
 		}

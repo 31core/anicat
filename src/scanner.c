@@ -123,6 +123,34 @@ void scan_code(TOKEN tk[], char *code)
 					tk[i].type = TOKEN_TYPE_EQU;
 				}
 			}
+			else if(tk[i].name[0] == '>' || tk[i].name[0] == '<')
+			{
+				/* == */
+				if(tk[i + 1].name[0] == '=')
+				{
+					if(tk[i].name[0] == '>')
+					{
+						tk[i].type = TOKEN_TYPE_GREQU;
+					}
+					else
+					{
+						tk[i].type = TOKEN_TYPE_LEEQU;
+					}
+					strcpy(tk[i].name, "==");
+					for(int j = i + 1; j < iter - 1; j++)
+					{
+						tk[j] = tk[j + 1];
+					}
+				}
+				else if(tk[i].name[0] == '>')
+				{
+					tk[i].type = TOKEN_TYPE_GREATER;
+				}
+				else
+				{
+					tk[i].type = TOKEN_TYPE_LESS;
+				}
+			}
 			else if(tk[i].name[0] == ':')
 			{
 				tk[i].type = TOKEN_TYPE_EXPLAIN;

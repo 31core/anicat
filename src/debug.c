@@ -21,9 +21,13 @@ void print_token(TOKEN tk)
 	PRINT_TYPE(tk.type, TOKEN_TYPE_SUB);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_MUL);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_DIV);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_GREATER);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_LESS);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_NUMBER);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_SPLIT);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_ISEQU);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_GREQU);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_LEEQU);
 }
 /* 打印tokens */
 void print_tokens(TOKEN *tk)
@@ -60,8 +64,13 @@ static void print_ast(AST_NODE *node, int tab)
 	PRINT_TYPE(node->type, AST_TYPE_SUB);
 	PRINT_TYPE(node->type, AST_TYPE_MUL);
 	PRINT_TYPE(node->type, AST_TYPE_DIV);
-	PRINT_TYPE(node->type, AST_TYPE_NUMBER);
+	PRINT_TYPE(node->type, AST_TYPE_GR);
+	PRINT_TYPE(node->type, AST_TYPE_LE);
+	PRINT_TYPE(node->type, AST_TYPE_GREQU);
+	PRINT_TYPE(node->type, AST_TYPE_LEEQU);
 	PRINT_TYPE(node->type, AST_TYPE_EQU);
+	PRINT_TYPE(node->type, AST_TYPE_NUMBER);
+
 	for(int j = 0; j < tab; j++)
 	{
 		printf(" --");
@@ -87,6 +96,7 @@ void print_ast_tree(AST_NODE *node)
 
 void show_functions()
 {
+	printf("--- Functions ---\n");
 	for(int i = 0; i < func_count; i++)
 	{
 		printf("%d: %s\n", i, functions[i].name);
@@ -95,6 +105,7 @@ void show_functions()
 
 void show_variables()
 {
+	printf("--- Global variables ---\n");
 	for(int i = 0; i < var_count; i++)
 	{
 		printf("%d: %s\n", i, variables[i].name);
