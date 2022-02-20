@@ -94,7 +94,7 @@ void print_ast_tree(AST_NODE *node)
 	print_ast_tree_sub(node, 0);
 }
 
-void show_functions()
+void show_functions(void)
 {
 	printf("--- Functions ---\n");
 	for(int i = 0; i < func_count; i++)
@@ -103,7 +103,7 @@ void show_functions()
 	}
 }
 
-void show_variables()
+void show_variables(void)
 {
 	printf("--- Global variables ---\n");
 	for(int i = 0; i < var_count; i++)

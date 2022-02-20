@@ -1,0 +1,5 @@
+#define EXCEPTION_UNDEFINED_FUNCTION	1
+#define EXCEPTION_UNDEFINED_VARIABLE	2
+#define EXCEPTION_INVALID_TYPE			3
+
+void exception(int, char*);

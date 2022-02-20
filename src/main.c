@@ -8,11 +8,11 @@
 #include <src/variable.h>
 #include <src/execute.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	ast_node_manage_init();
 
-	FILE *f = fopen("test/test.ac", "r");
+	FILE *f = fopen(argv[1], "r");
 	char *code = malloc(1024);
 	int i = 0;
 	while(!feof(f))
