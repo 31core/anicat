@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <src/ast.h>
+#include <src/function.h>
+#include <src/variable.h>
 
 /* 打印token */
 void print_token(TOKEN tk)
@@ -22,6 +23,7 @@ void print_token(TOKEN tk)
 	PRINT_TYPE(tk.type, TOKEN_TYPE_DIV);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_NUMBER);
 	PRINT_TYPE(tk.type, TOKEN_TYPE_SPLIT);
+	PRINT_TYPE(tk.type, TOKEN_TYPE_ISEQU);
 }
 /* 打印tokens */
 void print_tokens(TOKEN *tk)
@@ -59,6 +61,7 @@ static void print_ast(AST_NODE *node, int tab)
 	PRINT_TYPE(node->type, AST_TYPE_MUL);
 	PRINT_TYPE(node->type, AST_TYPE_DIV);
 	PRINT_TYPE(node->type, AST_TYPE_NUMBER);
+	PRINT_TYPE(node->type, AST_TYPE_EQU);
 	for(int j = 0; j < tab; j++)
 	{
 		printf(" --");
@@ -80,4 +83,20 @@ static void print_ast_tree_sub(AST_NODE *node, int re)
 void print_ast_tree(AST_NODE *node)
 {
 	print_ast_tree_sub(node, 0);
+}
+
+void show_functions()
+{
+	for(int i = 0; i < func_count; i++)
+	{
+		printf("%d: %s\n", i, functions[i].name);
+	}
+}
+
+void show_variables()
+{
+	for(int i = 0; i < var_count; i++)
+	{
+		printf("%d: %s\n", i, variables[i].name);
+	}
 }

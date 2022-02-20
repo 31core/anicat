@@ -153,6 +153,8 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 					ast->nodes[0]->type = AST_TYPE_NUMBER;
 				}
 
+				strcpy(ast->nodes[0]->data, tk[token_index].name);
+				strcpy(ast->nodes[2]->data, tk[token_index + 2].name);
 				/* 后操作数 */
 				if(tk[token_index + 2].type == TOKEN_TYPE_NAME)
 				{
@@ -179,6 +181,41 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 				else
 				{
 					ast->nodes[1]->type = AST_TYPE_DIV;
+				}
+			}
+			else if(tk[token_index + 1].type == TOKEN_TYPE_ISEQU)
+			{
+				ast->type = AST_TYPE_VAR_COMPARE;
+				ast_node_append(ast, ast_node_manage_alloc(), 0);
+				ast_node_append(ast, ast_node_manage_alloc(), 1);
+				ast_node_append(ast, ast_node_manage_alloc(), 2);
+
+				strcpy(ast->nodes[0]->data, tk[token_index].name);
+				strcpy(ast->nodes[2]->data, tk[token_index + 2].name);
+				/* 前操作数 */
+				if(tk[token_index].type == TOKEN_TYPE_NAME)
+				{
+					ast->nodes[0]->type = AST_TYPE_NAME;
+				}
+				else if(tk[token_index].type == TOKEN_TYPE_NUMBER)
+				{
+					ast->nodes[0]->type = AST_TYPE_NUMBER;
+				}
+
+				/* 后操作数 */
+				if(tk[token_index + 2].type == TOKEN_TYPE_NAME)
+				{
+					ast->nodes[2]->type = AST_TYPE_NAME;
+				}
+				else if(tk[token_index + 2].type == TOKEN_TYPE_NUMBER)
+				{
+					ast->nodes[2]->type = AST_TYPE_NUMBER;
+				}
+
+				/* 运算符 */
+				if(tk[token_index + 1].type == TOKEN_TYPE_ISEQU)
+				{
+					ast->nodes[1]->type = AST_TYPE_EQU;
 				}
 			}
 		}
@@ -210,11 +247,17 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 			{
 				/* ast->nodes[2] is code block */
 				token_index += ast_tree_build(ast->nodes[2], &tk[token_index]);
+				ast_index++;
+				ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
+				ast = top_ast->nodes[ast_index];
 			}
 			else if(ast->type == AST_TYPE_IF)
 			{
 				/* ast->nodes[1] is code block */
 				token_index += ast_tree_build(ast->nodes[1], &tk[token_index]);
+				ast_index++;
+				ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
+				ast = top_ast->nodes[ast_index];
 			}
 		}
 		/* right brackets */

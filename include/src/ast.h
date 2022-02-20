@@ -1,3 +1,4 @@
+#pragma once
 #include <src/token.h>
 
 #define AST_TYPE_UNDEFINED		0
@@ -19,6 +20,8 @@
 #define AST_TYPE_MUL			16
 #define AST_TYPE_DIV			17
 #define AST_TYPE_NUMBER			18
+#define AST_TYPE_EQU			19
+
 #define PRINT_TYPE(x, type) if(x == type) {printf("Type: "#type"\n");} 
 /* AST节点 */
 struct ast_node
