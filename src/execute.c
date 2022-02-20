@@ -1,5 +1,7 @@
+#include <stdio.h>
 #include <string.h>
 #include <src/ast.h>
+#include <src/exception.h>
 #include <src/function.h>
 
 void execute_code(AST_NODE *top_node)
@@ -27,10 +29,13 @@ void execute_func(struct function *func)
 		else if(ast->nodes[ast_index]->type == AST_TYPE_FUNC_CALL)
 		{
 			struct function *func_ptr = get_func_ptr(ast->nodes[ast_index]->nodes[0]->data);
-			if(func_ptr != NULL)
+			if(func_ptr == NULL)
 			{
-				execute_func(func_ptr);
+				char excp[50];
+				sprintf(excp, "'%s' no such function.", ast->nodes[ast_index]->nodes[0]->data);
+				exception(EXCEPTION_UNDEFINED_FUNCTION, excp);
 			}
+			execute_func(func_ptr);
 		}
 		ast_index++;
 	}

@@ -11,7 +11,11 @@ all:$(objs)
 
 check:
 	make all
-	./Anicat
+	./Anicat test/test.ac
+
+release:
+	make all
+	strip Anicat
 
 clean:
 	rm $(objs)
