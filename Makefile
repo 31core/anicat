@@ -1,4 +1,5 @@
 include src/Makefile
+include lib/Makefile
 
 CC = gcc
 C_FLAGS = -Iinclude -c
