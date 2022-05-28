@@ -6,28 +6,30 @@
 void print_token(TOKEN tk)
 {
 	printf("Name: \"%s\"\n", tk.name);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_UNKOWN);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_NAME);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_KEYWORD);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_EQU);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_EXPLAIN);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_LS_BKT);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_LM_BKT);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_LL_BKT);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_RS_BKT);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_RM_BKT);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_RL_BKT);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_ADD);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_SUB);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_MUL);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_DIV);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_GREATER);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_LESS);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_NUMBER);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_SPLIT);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_ISEQU);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_GREQU);
-	PRINT_TYPE(tk.type, TOKEN_TYPE_LEEQU);
+	char *types[] = {"TOKEN_TYPE_UNKOWN",
+		"TOKEN_TYPE_NAME",
+		"TOKEN_TYPE_KEYWORD",
+		"TOKEN_TYPE_EQU",
+		"TOKEN_TYPE_EXPLAIN",
+		"TOKEN_TYPE_LS_BKT",
+		"TOKEN_TYPE_LM_BKT",
+		"TOKEN_TYPE_LL_BKT",
+		"TOKEN_TYPE_RS_BKT",
+		"TOKEN_TYPE_RM_BKT",
+		"TOKEN_TYPE_RL_BKT",
+		"TOKEN_TYPE_ADD",
+		"TOKEN_TYPE_SUB",
+		"TOKEN_TYPE_MUL",
+		"TOKEN_TYPE_DIV",
+		"TOKEN_TYPE_GREATER",
+		"TOKEN_TYPE_LESS",
+		"TOKEN_TYPE_NUMBER",
+		"TOKEN_TYPE_SPLIT",
+		"TOKEN_TYPE_ISEQU",
+		"TOKEN_TYPE_GREQU",
+		"TOKEN_TYPE_LEEQU"
+	};
+	printf("Type: %s\n", types[tk.type]);
 }
 /* 打印tokens */
 void print_tokens(TOKEN *tk)
@@ -46,30 +48,32 @@ static void print_ast(AST_NODE *node, int tab)
 	{
 		printf("`--");
 	}
-	PRINT_TYPE(node->type, AST_TYPE_UNDEFINED);
-	PRINT_TYPE(node->type, AST_TYPE_PROGRAM);
-	PRINT_TYPE(node->type, AST_TYPE_NAME);
-	PRINT_TYPE(node->type, AST_TYPE_VAR_DECLEAR);
-	PRINT_TYPE(node->type, AST_TYPE_VAR_TYPE);
-	PRINT_TYPE(node->type, AST_TYPE_VAR_SET_VALUE);
-	PRINT_TYPE(node->type, AST_TYPE_VAR_COMPARE);
-	PRINT_TYPE(node->type, AST_TYPE_VAR_GET_VALUE);
-	PRINT_TYPE(node->type, AST_TYPE_FUNC_DEF);
-	PRINT_TYPE(node->type, AST_TYPE_FUNC_CALL);
-	PRINT_TYPE(node->type, AST_TYPE_CODE_BLOCK);
-	PRINT_TYPE(node->type, AST_TYPE_PARAMS);
-	PRINT_TYPE(node->type, AST_TYPE_IF);
-	PRINT_TYPE(node->type, AST_TYPE_EXPRESS);
-	PRINT_TYPE(node->type, AST_TYPE_ADD);
-	PRINT_TYPE(node->type, AST_TYPE_SUB);
-	PRINT_TYPE(node->type, AST_TYPE_MUL);
-	PRINT_TYPE(node->type, AST_TYPE_DIV);
-	PRINT_TYPE(node->type, AST_TYPE_GR);
-	PRINT_TYPE(node->type, AST_TYPE_LE);
-	PRINT_TYPE(node->type, AST_TYPE_GREQU);
-	PRINT_TYPE(node->type, AST_TYPE_LEEQU);
-	PRINT_TYPE(node->type, AST_TYPE_EQU);
-	PRINT_TYPE(node->type, AST_TYPE_NUMBER);
+	char *types[] = {"AST_TYPE_UNDEFINED",
+		"AST_TYPE_PROGRAM",
+		"AST_TYPE_NAME",
+		"AST_TYPE_VAR_DECLEAR",
+		"AST_TYPE_VAR_TYPE",
+		"AST_TYPE_VAR_SET_VALUE",
+		"AST_TYPE_VAR_COMPARE",
+		"AST_TYPE_VAR_GET_VALUE",
+		"AST_TYPE_FUNC_DEF",
+		"AST_TYPE_FUNC_CALL",
+		"AST_TYPE_CODE_BLOCK",
+		"AST_TYPE_PARAMS",
+		"AST_TYPE_IF",
+		"AST_TYPE_EXPRESS",
+		"AST_TYPE_ADD",
+		"AST_TYPE_SUB",
+		"AST_TYPE_MUL",
+		"AST_TYPE_DIV",
+		"AST_TYPE_GR",
+		"AST_TYPE_LE",
+		"AST_TYPE_GREQU",
+		"AST_TYPE_LEEQU",
+		"AST_TYPE_EQU",
+		"AST_TYPE_NUMBER"
+	};
+	printf("Type: %s\n", types[node->type]);
 
 	for(int j = 0; j < tab; j++)
 	{

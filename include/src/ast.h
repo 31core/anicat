@@ -26,7 +26,6 @@
 #define AST_TYPE_EQU			22 // =
 #define AST_TYPE_NUMBER			23
 
-#define PRINT_TYPE(x, type) if(x == type) {printf("Type: "#type"\n");} 
 /* AST节点 */
 struct ast_node
 {
