@@ -10,7 +10,7 @@ all:$(objs)
 %.o:%.c
 	$(CC) $(C_FLAGS) $*.c -o $*.o
 
-check:
+run:
 	make all
 	./Anicat test/test.ac
 

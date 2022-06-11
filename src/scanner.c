@@ -62,25 +62,27 @@ void scan_code(TOKEN tk[], char *code)
 
 			tk[iter + 1].name[0] = code[symbol_list[i]];
 			tk[iter + 1].name[1] = '\0';
-			iter += 1;
+			iter++;
 		}
-		iter += 1;
+		iter++;
 	}
+	int token_size = iter - 2;
+
 	/* 删除空格token */
-	for(int i = 0; i < iter - 1; i++)
+	for(int i = 0; i < token_size; i++)
 	{
 		if(tk[i].name[0] == ' ' || tk[i].name[0] == '\t' || tk[i].name[0] == '\n')
 		{
-			for(int j = i; j < iter - 1; j++)
+			for(int j = i; j < token_size - 1; j++)
 			{
 				tk[j] = tk[j + 1];
 			}
-			iter -= 1;
-			i -= 1;
+			token_size--;
+			i--;
 		}
 	}
 	/* 确定每个token的type */
-	for(int i = 0; i < iter - 1; i++)
+	for(int i = 0; i < token_size; i++)
 	{
 		tk[i].type = TOKEN_TYPE_NAME;
 		if(is_keyword(tk[i].name))
@@ -100,11 +102,13 @@ void scan_code(TOKEN tk[], char *code)
 				{
 					tk[i].type = TOKEN_TYPE_ISEQU;
 					strcpy(tk[i].name, "==");
-					for(int j = i + 1; j < iter - 1; j++)
+					for(int j = i + 1; j < token_size - 1; j++)
 					{
 						tk[j] = tk[j + 1];
 					}
+					token_size--;
 				}
+				/* = */
 				else
 				{
 					tk[i].type = TOKEN_TYPE_EQU;
@@ -112,7 +116,7 @@ void scan_code(TOKEN tk[], char *code)
 			}
 			else if(tk[i].name[0] == '>' || tk[i].name[0] == '<')
 			{
-				/* == */
+				/* >= or <= */
 				if(tk[i + 1].name[0] == '=')
 				{
 					if(tk[i].name[0] == '>')
@@ -124,10 +128,11 @@ void scan_code(TOKEN tk[], char *code)
 						tk[i].type = TOKEN_TYPE_LEEQU;
 					}
 					strcpy(tk[i].name, "==");
-					for(int j = i + 1; j < iter - 1; j++)
+					for(int j = i + 1; j < token_size - 1; j++)
 					{
 						tk[j] = tk[j + 1];
 					}
+					token_size--;
 				}
 				else if(tk[i].name[0] == '>')
 				{
@@ -188,5 +193,5 @@ void scan_code(TOKEN tk[], char *code)
 			}
 		}
 	}
-	tk[iter - 1].type = TOKEN_TYPE_UNKOWN;
+	tk[token_size].type = TOKEN_TYPE_UNKOWN;
 }
