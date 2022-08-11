@@ -24,7 +24,8 @@
 #define AST_TYPE_LEEQU			20 // >=
 #define AST_TYPE_EQU			21 // ==
 #define AST_TYPE_NUMBER			22
-
+#define AST_TYPE_STRING			23
+#define AST_TYPE_VARIABLE		24
 /* AST节点 */
 struct ast_node
 {

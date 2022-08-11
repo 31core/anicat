@@ -3,10 +3,7 @@
 #include <string.h>
 #include <src/ast.h>
 #include <src/debug.h>
-#include <src/scanner.h>
-#include <src/function.h>
-#include <src/variable.h>
-#include <src/execute.h>
+#include <src/token.h>
 
 int main(int argc, char *argv[])
 {
@@ -28,10 +25,10 @@ int main(int argc, char *argv[])
 	code[i] = '\0';
 
 	fclose(f);
-	struct token tk[1024];
-	struct ast_node ast;
+	TOKEN tk[1024];
+	AST_NODE ast;
 
-	scan_code(tk, code);
+	generate_token(tk, code);
 
 	ast_node_init(&ast);
 	ast_tree_build(&ast, tk);

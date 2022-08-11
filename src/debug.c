@@ -27,7 +27,8 @@ void print_token(TOKEN tk)
 		"TOKEN_TYPE_SPLIT",
 		"TOKEN_TYPE_ISEQU",
 		"TOKEN_TYPE_GREQU",
-		"TOKEN_TYPE_LEEQU"
+		"TOKEN_TYPE_LEEQU",
+		"TOKEN_TYPE_STRING"
 	};
 	printf("Type: %s\n", types[tk.type]);
 }
@@ -70,7 +71,9 @@ static void print_ast(AST_NODE *node, int tab)
 		"AST_TYPE_GREQU",
 		"AST_TYPE_LEEQU",
 		"AST_TYPE_EQU",
-		"AST_TYPE_NUMBER"
+		"AST_TYPE_NUMBER",
+		"AST_TYPE_STRING",
+		"AST_TYPE_VARIABLE"
 	};
 	printf("Type: %s\n", types[node->type]);
 

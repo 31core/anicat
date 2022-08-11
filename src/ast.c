@@ -94,7 +94,7 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 				ast->nodes[2]->type = AST_TYPE_CODE_BLOCK;
 
 				strcpy(ast->nodes[0]->data, tk[token_index + 1].name);
-				token_index += 1;
+				token_index++;
 			}
 			/* 变量声明 */
 			else if(!strcmp(tk[token_index].name, "var"))
@@ -108,6 +108,8 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 
 				strcpy(ast->nodes[0]->data, tk[token_index + 1].name);
 				strcpy(ast->nodes[1]->data, tk[token_index + 3].name);
+
+				token_index += 3;
 			}
 			/* if语句 */
 			else if(!strcmp(tk[token_index].name, "if"))
@@ -119,7 +121,9 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 				ast->nodes[1]->type = AST_TYPE_CODE_BLOCK;
 			}
 		}
-		else if(tk[token_index].type == TOKEN_TYPE_NAME)
+		else if(tk[token_index].type == TOKEN_TYPE_NAME ||
+			tk[token_index].type == TOKEN_TYPE_NUMBER ||
+			tk[token_index].type == TOKEN_TYPE_STRING)
 		{
 			/* 函数调用 */
 			if(tk[token_index + 1].type == TOKEN_TYPE_LS_BKT)
@@ -131,6 +135,22 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 				ast->nodes[1]->type = AST_TYPE_PARAMS;
 
 				strcpy(ast->nodes[0]->data, tk[token_index].name);
+			}
+			else if(tk[token_index].type == TOKEN_TYPE_NAME)
+			{
+				strcpy(ast->data, tk[token_index].name);
+				ast->type = AST_TYPE_VARIABLE;
+			}
+			else if(tk[token_index].type == TOKEN_TYPE_NUMBER)
+			{
+				strcpy(ast->data, tk[token_index].name);
+				ast->type = AST_TYPE_NUMBER;
+			}
+			else if(tk[token_index].type == TOKEN_TYPE_STRING)
+			{
+				strcpy(ast->data, tk[token_index].name + 1);
+				ast->data[strlen(ast->data) - 1] = '\0';
+				ast->type = AST_TYPE_STRING;
 			}
 		}
 		/* 四则运算 */
@@ -151,7 +171,11 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 			}
 			else
 			{
-				ast->nodes[1] = ast_node_manage_alloc();
+				if(top_ast->nodes[ast_index]->type == AST_TYPE_VAR_SET_VALUE)
+				{
+					ast = top_ast->nodes[ast_index]->nodes[1];
+				}
+				ast_node_append(ast, ast_node_manage_alloc(), 0);
 				if(tk[token_index - 1].type == TOKEN_TYPE_NAME)
 				{
 					ast->nodes[0]->type = AST_TYPE_NAME;
@@ -192,6 +216,7 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 			{
 				ast->type = AST_TYPE_DIV;
 			}
+			token_index++;
 		}
 		/* i = x */
 		else if(tk[token_index].type == TOKEN_TYPE_EQU)
@@ -202,6 +227,7 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 
 			strcpy(ast->nodes[0]->data, tk[token_index - 1].name);
 			strcpy(ast->nodes[1]->data, tk[token_index + 1].name);
+			token_index++;
 		}
 		/* <, >, ==, <=, >= */
 		else if(tk[token_index].type == TOKEN_TYPE_LESS ||
@@ -234,7 +260,6 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 			{
 				ast->nodes[1]->type = AST_TYPE_NUMBER;
 			}
-
 			/* 运算符 */
 			if(tk[token_index].type == TOKEN_TYPE_LESS)
 			{
@@ -256,6 +281,7 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 			{
 				ast->type = AST_TYPE_GREQU;
 			}
+			token_index++;
 		}
 		else if(tk[token_index].type == TOKEN_TYPE_SPLIT)
 		{
@@ -303,6 +329,7 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 		tk[token_index].type == TOKEN_TYPE_RM_BKT ||
 		tk[token_index].type == TOKEN_TYPE_RL_BKT)
 		{
+			//top_ast->nodes[ast_index] = NULL;
 			return token_index;
 		}
 		token_index++;

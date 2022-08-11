@@ -40,7 +40,7 @@ static int is_keyword(char *str)
 }
 
 /* 词法分析 */
-void scan_code(TOKEN tk[], char *code)
+void generate_token(TOKEN tk[], char *code)
 {
 	int symbol_list[1024];
 	int iter = 0;
@@ -93,57 +93,61 @@ void scan_code(TOKEN tk[], char *code)
 		{
 			tk[i].type = TOKEN_TYPE_NUMBER;
 		}
+		else if(tk[i].name[0] == '"' && tk[i].name[strlen(tk[i].name) - 1] == '"')
+		{
+			tk[i].type = TOKEN_TYPE_STRING;
+		}
+		else if(tk[i].name[0] == '=')
+		{
+			/* == */
+			if(tk[i + 1].name[0] == '=')
+			{
+				tk[i].type = TOKEN_TYPE_ISEQU;
+				strcpy(tk[i].name, "==");
+				for(int j = i + 1; j < token_size - 1; j++)
+				{
+					tk[j] = tk[j + 1];
+				}
+				token_size--;
+			}
+			/* = */
+			else
+			{
+				tk[i].type = TOKEN_TYPE_EQU;
+			}
+		}
+		else if(tk[i].name[0] == '>' || tk[i].name[0] == '<')
+		{
+			/* >= or <= */
+			if(tk[i + 1].name[0] == '=')
+			{
+				if(tk[i].name[0] == '>')
+				{
+					tk[i].type = TOKEN_TYPE_GREQU;
+				}
+				else
+				{
+					tk[i].type = TOKEN_TYPE_LEEQU;
+				}
+				strcpy(tk[i].name, "==");
+				for(int j = i + 1; j < token_size - 1; j++)
+				{
+					tk[j] = tk[j + 1];
+				}
+				token_size--;
+			}
+			else if(tk[i].name[0] == '>')
+			{
+				tk[i].type = TOKEN_TYPE_GREATER;
+			}
+			else
+			{
+				tk[i].type = TOKEN_TYPE_LESS;
+			}
+		}
 		else if(strlen(tk[i].name) == 1)
 		{
-			if(tk[i].name[0] == '=')
-			{
-				/* == */
-				if(tk[i + 1].name[0] == '=')
-				{
-					tk[i].type = TOKEN_TYPE_ISEQU;
-					strcpy(tk[i].name, "==");
-					for(int j = i + 1; j < token_size - 1; j++)
-					{
-						tk[j] = tk[j + 1];
-					}
-					token_size--;
-				}
-				/* = */
-				else
-				{
-					tk[i].type = TOKEN_TYPE_EQU;
-				}
-			}
-			else if(tk[i].name[0] == '>' || tk[i].name[0] == '<')
-			{
-				/* >= or <= */
-				if(tk[i + 1].name[0] == '=')
-				{
-					if(tk[i].name[0] == '>')
-					{
-						tk[i].type = TOKEN_TYPE_GREQU;
-					}
-					else
-					{
-						tk[i].type = TOKEN_TYPE_LEEQU;
-					}
-					strcpy(tk[i].name, "==");
-					for(int j = i + 1; j < token_size - 1; j++)
-					{
-						tk[j] = tk[j + 1];
-					}
-					token_size--;
-				}
-				else if(tk[i].name[0] == '>')
-				{
-					tk[i].type = TOKEN_TYPE_GREATER;
-				}
-				else
-				{
-					tk[i].type = TOKEN_TYPE_LESS;
-				}
-			}
-			else if(tk[i].name[0] == ':')
+			if(tk[i].name[0] == ':')
 			{
 				tk[i].type = TOKEN_TYPE_EXPLAIN;
 			}

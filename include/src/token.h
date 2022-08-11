@@ -1,3 +1,4 @@
+#pragma once
 #define TOKEN_TYPE_UNKOWN	0
 #define TOKEN_TYPE_NAME		1
 #define TOKEN_TYPE_KEYWORD	2
@@ -20,6 +21,7 @@
 #define TOKEN_TYPE_ISEQU	19 // ==
 #define TOKEN_TYPE_GREQU	20 // ==
 #define TOKEN_TYPE_LEEQU	21 // ==
+#define TOKEN_TYPE_STRING	22
 
 struct token
 {
@@ -28,3 +30,5 @@ struct token
 };
 
 typedef struct token TOKEN;
+
+void generate_token(TOKEN*, char*);
