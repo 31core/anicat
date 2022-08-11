@@ -54,7 +54,6 @@ static void print_ast(AST_NODE *node, int tab)
 		"AST_TYPE_VAR_DECLEAR",
 		"AST_TYPE_VAR_TYPE",
 		"AST_TYPE_VAR_SET_VALUE",
-		"AST_TYPE_VAR_COMPARE",
 		"AST_TYPE_VAR_GET_VALUE",
 		"AST_TYPE_FUNC_DEF",
 		"AST_TYPE_FUNC_CALL",
@@ -86,7 +85,7 @@ static void print_ast_tree_sub(AST_NODE *node, int re)
 {
 	print_ast(node, re);
 	int i = 0;
-	while(node->nodes[i] != 0)
+	while(node->nodes[i] != NULL)
 	{
 		print_ast_tree_sub(node->nodes[i], re + 1);
 		i += 1;
