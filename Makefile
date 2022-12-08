@@ -12,7 +12,7 @@ all:$(objs)
 
 run:
 	make all
-	./Anicat test/test.ac
+	./Anicat test/test.ac > output.txt
 
 release:
 	make all

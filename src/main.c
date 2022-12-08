@@ -31,8 +31,14 @@ int main(int argc, char *argv[])
 	generate_token(tk, code);
 
 	ast_node_init(&ast);
+	ast.type = AST_TYPE_PROGRAM;
 	ast_tree_build(&ast, tk);
-	register_function(&ast);
-	register_variable(&ast);
-	execute_func(get_func_ptr("main"));
+
+	//print_tokens(tk);
+
+	print_ast_tree(&ast);
+
+	//register_function(&ast);
+	//register_variable(&ast);
+	//execute_func(get_func_ptr("main"));
 }

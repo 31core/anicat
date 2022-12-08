@@ -51,7 +51,7 @@ static void print_ast(AST_NODE *node, int tab)
 	}
 	char *types[] = {"AST_TYPE_UNDEFINED",
 		"AST_TYPE_PROGRAM",
-		"AST_TYPE_NAME",
+		"AST_TYPE_IDENTIFIER",
 		"AST_TYPE_VAR_DECLEAR",
 		"AST_TYPE_VAR_TYPE",
 		"AST_TYPE_VAR_SET_VALUE",

@@ -67,14 +67,15 @@ struct layer
 	int potition;
 };
 
+#define CURRENT_NODE top_ast->nodes[ast_index]
+#define LAST_NODE top_ast->nodes[ast_index - 1]
+#define IS_LAST_NODE ast_index > 0
 /* 组建AST树 */
 int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 {
 	int token_index = 0;
 	int ast_index = 0;
-	AST_NODE *ast;
 	ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
-	ast = top_ast->nodes[ast_index];
 	while(tk[token_index].type != TOKEN_TYPE_UNKOWN)
 	{
 		/* keywords */
@@ -83,74 +84,114 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 			/* 函数定义 */
 			if(!strcmp(tk[token_index].name, "func"))
 			{
-				ast->type = AST_TYPE_FUNC_DEF;
-
-				ast_node_append(ast, ast_node_manage_alloc(), 0);
-				ast_node_append(ast, ast_node_manage_alloc(), 1);
-				ast_node_append(ast, ast_node_manage_alloc(), 2);
-
-				ast->nodes[0]->type = AST_TYPE_NAME;
-				ast->nodes[1]->type = AST_TYPE_PARAMS;
-				ast->nodes[2]->type = AST_TYPE_CODE_BLOCK;
-
-				strcpy(ast->nodes[0]->data, tk[token_index + 1].name);
-				token_index++;
+				CURRENT_NODE->type = AST_TYPE_FUNC_DEF;
 			}
 			/* 变量声明 */
 			else if(!strcmp(tk[token_index].name, "var"))
 			{
-				ast->type = AST_TYPE_VAR_DECLEAR;
-				ast_node_append(ast, ast_node_manage_alloc(), 0); //NAME
-				ast_node_append(ast, ast_node_manage_alloc(), 1); //TYPE
-
-				ast->nodes[0]->type = AST_TYPE_NAME;
-				ast->nodes[1]->type = AST_TYPE_VAR_TYPE;
-
-				strcpy(ast->nodes[0]->data, tk[token_index + 1].name);
-				strcpy(ast->nodes[1]->data, tk[token_index + 3].name);
-
-				token_index += 3;
+				CURRENT_NODE->type = AST_TYPE_VAR_DECLEAR;
 			}
 			/* if语句 */
 			else if(!strcmp(tk[token_index].name, "if"))
 			{
-				ast->type = AST_TYPE_IF;
-				ast_node_append(ast, ast_node_manage_alloc(), 0); //Express
-				ast_node_append(ast, ast_node_manage_alloc(), 1); //CODE BLOCK
-				ast->nodes[0]->type = AST_TYPE_EXPRESS;
-				ast->nodes[1]->type = AST_TYPE_CODE_BLOCK;
+				CURRENT_NODE->type = AST_TYPE_IF;
 			}
 		}
 		else if(tk[token_index].type == TOKEN_TYPE_NAME ||
 			tk[token_index].type == TOKEN_TYPE_NUMBER ||
 			tk[token_index].type == TOKEN_TYPE_STRING)
 		{
-			/* 函数调用 */
-			if(tk[token_index + 1].type == TOKEN_TYPE_LS_BKT)
+			CURRENT_NODE->type = AST_TYPE_IDENTIFIER;
+			strcpy(CURRENT_NODE->data, tk[token_index].name);
+			if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_FUNC_DEF)
 			{
-				ast->type = AST_TYPE_FUNC_CALL;
-				ast_node_append(ast, ast_node_manage_alloc(), 0); //name
-				ast_node_append(ast, ast_node_manage_alloc(), 1); //params
-				ast->nodes[0]->type = AST_TYPE_NAME;
-				ast->nodes[1]->type = AST_TYPE_PARAMS;
+				LAST_NODE->nodes[0] = CURRENT_NODE;
+				ast_index--;
+			}
+			else if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_VAR_DECLEAR)
+			{
+				LAST_NODE->nodes[0] = CURRENT_NODE;
+				ast_index--;
+			}
+			else if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_VAR_TYPE)
+			{
+				LAST_NODE->nodes[0] = CURRENT_NODE;
+				ast_index -= 2;
+			}
+			else if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_VAR_SET_VALUE)
+			{
+				LAST_NODE->nodes[1] = CURRENT_NODE;
+				ast_index--;
+			}
+			else if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_ADD ||
+				LAST_NODE->type == AST_TYPE_SUB))
+			{
+				LAST_NODE->nodes[1] = CURRENT_NODE;
+				ast_index--;
+			}
+		}
+		else if(tk[token_index].type == TOKEN_TYPE_LS_BKT)
+		{
+			if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_FUNC_DEF || LAST_NODE->type == AST_TYPE_IF))
+			{
+				CURRENT_NODE->type = AST_TYPE_PARAMS;
+				if(LAST_NODE->type == AST_TYPE_FUNC_DEF)
+				{
+					LAST_NODE->nodes[1] = CURRENT_NODE;
+				}
+				else if(LAST_NODE->type == AST_TYPE_IF)
+				{
+					LAST_NODE->nodes[0] = CURRENT_NODE;
+				}
+				token_index += ast_tree_build(CURRENT_NODE, &tk[token_index + 1]);
+				ast_index--;
+			}
+			else if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_IDENTIFIER)
+			{
+				CURRENT_NODE->type = AST_TYPE_FUNC_CALL;
+				CURRENT_NODE->nodes[0] = LAST_NODE;
+				LAST_NODE = CURRENT_NODE;
 
-				strcpy(ast->nodes[0]->data, tk[token_index].name);
+				ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
+				LAST_NODE->nodes[1] = CURRENT_NODE;
+				CURRENT_NODE->type = AST_TYPE_PARAMS;
+				token_index += ast_tree_build(CURRENT_NODE, &tk[token_index + 1]);
 			}
-			else if(tk[token_index].type == TOKEN_TYPE_NAME)
+		}
+		else if(tk[token_index].type == TOKEN_TYPE_LL_BKT)
+		{
+			if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_FUNC_DEF || LAST_NODE->type == AST_TYPE_IF))
 			{
-				strcpy(ast->data, tk[token_index].name);
-				ast->type = AST_TYPE_VARIABLE;
+				CURRENT_NODE->type = AST_TYPE_CODE_BLOCK;
+				if(LAST_NODE->type == AST_TYPE_FUNC_DEF)
+				{
+					LAST_NODE->nodes[2] = CURRENT_NODE;
+				}
+				else if(LAST_NODE->type == AST_TYPE_IF)
+				{
+					LAST_NODE->nodes[1] = CURRENT_NODE;
+				}
+				token_index += ast_tree_build(CURRENT_NODE, &tk[token_index + 1]);
+				ast_index--;
 			}
-			else if(tk[token_index].type == TOKEN_TYPE_NUMBER)
+		}
+		else if(tk[token_index].type == TOKEN_TYPE_EXPLAIN)
+		{
+			if(LAST_NODE->type == AST_TYPE_VAR_DECLEAR)
 			{
-				strcpy(ast->data, tk[token_index].name);
-				ast->type = AST_TYPE_NUMBER;
+				CURRENT_NODE->type = AST_TYPE_VAR_TYPE;
+				LAST_NODE->nodes[1] = CURRENT_NODE;
+				LAST_NODE = CURRENT_NODE;
 			}
-			else if(tk[token_index].type == TOKEN_TYPE_STRING)
+			else if(LAST_NODE->type == AST_TYPE_IDENTIFIER)
 			{
-				strcpy(ast->data, tk[token_index].name + 1);
-				ast->data[strlen(ast->data) - 1] = '\0';
-				ast->type = AST_TYPE_STRING;
+				CURRENT_NODE->type = AST_TYPE_VAR_DECLEAR;
+				CURRENT_NODE->nodes[0] = LAST_NODE;
+				LAST_NODE = CURRENT_NODE;
+
+				ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
+				CURRENT_NODE->type = AST_TYPE_VAR_TYPE;
+				LAST_NODE->nodes[1] = CURRENT_NODE;
 			}
 		}
 		/* 四则运算 */
@@ -159,75 +200,42 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 			tk[token_index].type == TOKEN_TYPE_MUL ||
 			tk[token_index].type == TOKEN_TYPE_DIV)
 		{
-			/* 前操作数 */
-			if(top_ast->nodes[ast_index]->type == AST_TYPE_ADD ||
-				top_ast->nodes[ast_index]->type == AST_TYPE_SUB ||
-				top_ast->nodes[ast_index]->type == AST_TYPE_MUL ||
-				top_ast->nodes[ast_index]->type == AST_TYPE_DIV)
-			{
-				ast = ast_node_manage_alloc();
-				ast->nodes[0] = top_ast->nodes[ast_index];
-				top_ast->nodes[ast_index] = ast;
-			}
-			else
-			{
-				if(top_ast->nodes[ast_index]->type == AST_TYPE_VAR_SET_VALUE)
-				{
-					ast = top_ast->nodes[ast_index]->nodes[1];
-				}
-				ast_node_append(ast, ast_node_manage_alloc(), 0);
-				if(tk[token_index - 1].type == TOKEN_TYPE_NAME)
-				{
-					ast->nodes[0]->type = AST_TYPE_NAME;
-				}
-				else if(tk[token_index - 1].type == TOKEN_TYPE_NUMBER)
-				{
-					ast->nodes[0]->type = AST_TYPE_NUMBER;
-				}
-				strcpy(ast->nodes[0]->data, tk[token_index - 1].name);
-			}
-			
-			ast_node_append(ast, ast_node_manage_alloc(), 1);
-			strcpy(ast->nodes[1]->data, tk[token_index + 1].name);
-			/* 后操作数 */
-			if(tk[token_index + 1].type == TOKEN_TYPE_NAME)
-			{
-				ast->nodes[1]->type = AST_TYPE_NAME;
-			}
-			else if(tk[token_index + 1].type == TOKEN_TYPE_NUMBER)
-			{
-				ast->nodes[1]->type = AST_TYPE_NUMBER;
-			}
-
 			/* 运算符 */
 			if(tk[token_index].type == TOKEN_TYPE_ADD)
 			{
-				ast->type = AST_TYPE_ADD;
+				CURRENT_NODE->type = AST_TYPE_ADD;
 			}
 			else if(tk[token_index].type == TOKEN_TYPE_SUB)
 			{
-				ast->type = AST_TYPE_SUB;
+				CURRENT_NODE->type = AST_TYPE_SUB;
 			}
 			else if(tk[token_index].type == TOKEN_TYPE_MUL)
 			{
-				ast->type = AST_TYPE_MUL;
+				CURRENT_NODE->type = AST_TYPE_MUL;
 			}
 			else
 			{
-				ast->type = AST_TYPE_DIV;
+				CURRENT_NODE->type = AST_TYPE_DIV;
 			}
-			token_index++;
+			if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_IDENTIFIER ||
+				LAST_NODE->type == AST_TYPE_NUMBER))
+			{
+				CURRENT_NODE->nodes[0] = LAST_NODE;
+			}
+			else
+			{
+				CURRENT_NODE->nodes[0] = LAST_NODE->nodes[1];
+			}
+			//LAST_NODE = CURRENT_NODE;
+			//ast_index--;
 		}
 		/* i = x */
 		else if(tk[token_index].type == TOKEN_TYPE_EQU)
 		{
-			ast->type = AST_TYPE_VAR_SET_VALUE;
-			ast_node_append(ast, ast_node_manage_alloc(), 0);
-			ast_node_append(ast, ast_node_manage_alloc(), 1);
-
-			strcpy(ast->nodes[0]->data, tk[token_index - 1].name);
-			strcpy(ast->nodes[1]->data, tk[token_index + 1].name);
-			token_index++;
+			CURRENT_NODE->type = AST_TYPE_VAR_SET_VALUE;
+			CURRENT_NODE->nodes[0] = LAST_NODE;
+			LAST_NODE = CURRENT_NODE;
+			ast_index--;
 		}
 		/* <, >, ==, <=, >= */
 		else if(tk[token_index].type == TOKEN_TYPE_LESS ||
@@ -236,92 +244,26 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 			tk[token_index].type == TOKEN_TYPE_LEEQU ||
 			tk[token_index].type == TOKEN_TYPE_GREQU)
 		{
-			ast_node_append(ast, ast_node_manage_alloc(), 0);
-			ast_node_append(ast, ast_node_manage_alloc(), 1);
-
-			strcpy(ast->nodes[0]->data, tk[token_index - 1].name);
-			strcpy(ast->nodes[1]->data, tk[token_index + 1].name);
-			/* 前操作数 */
-			if(tk[token_index - 1].type == TOKEN_TYPE_NAME)
-			{
-				ast->nodes[0]->type = AST_TYPE_NAME;
-			}
-			else if(tk[token_index - 1].type == TOKEN_TYPE_NUMBER)
-			{
-				ast->nodes[0]->type = AST_TYPE_NUMBER;
-			}
-
-			/* 后操作数 */
-			if(tk[token_index + 1].type == TOKEN_TYPE_NAME)
-			{
-				ast->nodes[1]->type = AST_TYPE_NAME;
-			}
-			else if(tk[token_index + 1].type == TOKEN_TYPE_NUMBER)
-			{
-				ast->nodes[1]->type = AST_TYPE_NUMBER;
-			}
 			/* 运算符 */
 			if(tk[token_index].type == TOKEN_TYPE_LESS)
 			{
-				ast->type = AST_TYPE_LE;
+				CURRENT_NODE->type = AST_TYPE_LE;
 			}
 			else if(tk[token_index].type == TOKEN_TYPE_GREATER)
 			{
-				ast->type = AST_TYPE_GR;
+				CURRENT_NODE->type = AST_TYPE_GR;
 			}
 			else if(tk[token_index].type == TOKEN_TYPE_ISEQU)
 			{
-				ast->type = AST_TYPE_EQU;
+				CURRENT_NODE->type = AST_TYPE_EQU;
 			}
 			else if(tk[token_index].type == TOKEN_TYPE_LEEQU)
 			{
-				ast->type = AST_TYPE_LEEQU;
+				CURRENT_NODE->type = AST_TYPE_LEEQU;
 			}
 			else
 			{
-				ast->type = AST_TYPE_GREQU;
-			}
-			token_index++;
-		}
-		else if(tk[token_index].type == TOKEN_TYPE_SPLIT)
-		{
-			ast_index++;
-			ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
-			ast = top_ast->nodes[ast_index];
-		}
-		/* ( */
-		else if(tk[token_index].type == TOKEN_TYPE_LS_BKT)
-		{
-			if(ast->type == AST_TYPE_FUNC_DEF || ast->type == AST_TYPE_FUNC_CALL)
-			{
-				/* ast->nodes[1] is params block */
-				token_index += ast_tree_build(ast->nodes[1], &tk[token_index]);
-				
-			}
-			else if(ast->type == AST_TYPE_IF)
-			{
-				/* ast->nodes[0] is expression block */
-				token_index += ast_tree_build(ast->nodes[0], &tk[token_index]);
-			}
-		}
-		/* { */
-		else if(tk[token_index].type == TOKEN_TYPE_LL_BKT)
-		{
-			if(ast->type == AST_TYPE_FUNC_DEF)
-			{
-				/* ast->nodes[2] is code block */
-				token_index += ast_tree_build(ast->nodes[2], &tk[token_index]);
-				ast_index++;
-				ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
-				ast = top_ast->nodes[ast_index];
-			}
-			else if(ast->type == AST_TYPE_IF)
-			{
-				/* ast->nodes[1] is code block */
-				token_index += ast_tree_build(ast->nodes[1], &tk[token_index]);
-				ast_index++;
-				ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
-				ast = top_ast->nodes[ast_index];
+				CURRENT_NODE->type = AST_TYPE_GREQU;
 			}
 		}
 		/* right brackets */
@@ -329,9 +271,11 @@ int ast_tree_build(AST_NODE *top_ast, TOKEN tk[])
 		tk[token_index].type == TOKEN_TYPE_RM_BKT ||
 		tk[token_index].type == TOKEN_TYPE_RL_BKT)
 		{
-			//top_ast->nodes[ast_index] = NULL;
-			return token_index;
+			top_ast->nodes[ast_index] = NULL;
+			return token_index + 1;
 		}
 		token_index++;
+		ast_index++;
+		ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
 	}
 }
