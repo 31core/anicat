@@ -4,7 +4,7 @@
 #define AST_TYPE_UNDEFINED		0
 #define AST_TYPE_PROGRAM		1
 #define AST_TYPE_IDENTIFIER		2
-#define AST_TYPE_VAR_DECLEAR	3
+#define AST_TYPE_VAR_DECLARE	3
 #define AST_TYPE_VAR_TYPE		4
 #define AST_TYPE_VAR_SET_VALUE	5
 #define AST_TYPE_VAR_GET_VALUE	6
@@ -38,4 +38,4 @@ typedef struct ast_node AST_NODE;
 
 void ast_node_init(AST_NODE*);
 void ast_node_manage_init(void);
-int ast_tree_build(AST_NODE*, TOKEN*);
+int ast_build(AST_NODE*, TOKEN*);

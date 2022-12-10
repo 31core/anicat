@@ -21,7 +21,7 @@ void execute_func(struct function *func)
 	AST_NODE *ast = func->code_block;
 	while(ast->nodes[ast_index] != 0)
 	{
-		if(ast->nodes[ast_index]->type == AST_TYPE_VAR_DECLEAR)
+		if(ast->nodes[ast_index]->type == AST_TYPE_VAR_DECLARE)
 		{
 			var_pool_append(&func->pool, ast->nodes[ast_index]->nodes[0]->data,
 				get_type_from_str(ast->nodes[ast_index]->nodes[1]->data));

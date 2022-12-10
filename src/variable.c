@@ -35,7 +35,7 @@ void register_variable(AST_NODE *top_ast)
 	int i = 0;
 	while(top_ast->nodes[i] != 0)
 	{
-		if(top_ast->nodes[i]->type == AST_TYPE_VAR_DECLEAR)
+		if(top_ast->nodes[i]->type == AST_TYPE_VAR_DECLARE)
 		{
 			strcpy(variables[var_count].name, top_ast->nodes[i]->nodes[0]->data);
 			variables[var_count].type = get_type_from_str(top_ast->nodes[i]->nodes[1]->data);

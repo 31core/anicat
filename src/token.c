@@ -3,7 +3,7 @@
 #include <src/keywords.h>
 #include <lib/string.h>
 
-/* 获取标识符位置,以识别语句类型 */
+/* detect the positions of symbols */
 static int get_flag_pos(int ret[], char *str)
 {
 	int i = 0;
@@ -48,7 +48,7 @@ void generate_token(TOKEN tk[], char *code)
 	char tmp_code[1024];
 	for(int i = 1; i < size; i++)
 	{
-		/* 单符号 */
+		/* single byte sybmol */
 		if(symbol_list[i] - symbol_list[i - 1] == 1)
 		{
 			tk[iter].name[0] = code[symbol_list[i]];
@@ -71,7 +71,7 @@ void generate_token(TOKEN tk[], char *code)
 	/* 删除空格token */
 	for(int i = 0; i < token_size; i++)
 	{
-		if(tk[i].name[0] == ' ' || tk[i].name[0] == '\t' || tk[i].name[0] == '\n')
+		if(tk[i].name[0] == ' ' || tk[i].name[0] == '\t' || tk[i].name[0] == '\n' || tk[i].name[0] == '\r')
 		{
 			for(int j = i; j < token_size - 1; j++)
 			{
@@ -80,8 +80,12 @@ void generate_token(TOKEN tk[], char *code)
 			token_size--;
 			i--;
 		}
+		else
+		{
+			printf("|%s|\n", tk[i].name);
+		}
 	}
-	/* 确定每个token的type */
+	/* detect types */
 	for(int i = 0; i < token_size; i++)
 	{
 		tk[i].type = TOKEN_TYPE_NAME;

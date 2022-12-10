@@ -2,7 +2,7 @@
 #include <src/function.h>
 #include <src/variable.h>
 
-/* 打印token */
+/* print token */
 void print_token(TOKEN tk)
 {
 	printf("Name: \"%s\"\n", tk.name);
@@ -32,18 +32,18 @@ void print_token(TOKEN tk)
 	};
 	printf("Type: %s\n", types[tk.type]);
 }
-/* 打印tokens */
+/* print token list */
 void print_tokens(TOKEN *tk)
 {
 	int i = 0;
 	while(tk[i].type != 0)
 	{
 		print_token(tk[i]);
-		i += 1;
+		i++;
 	}
 }
-/* 打印AST */
-static void print_ast(AST_NODE *node, int tab)
+/* print AST */
+static void _print_ast_node(AST_NODE *node, int tab)
 {
 	for(int j = 0; j < tab; j++)
 	{
@@ -52,7 +52,7 @@ static void print_ast(AST_NODE *node, int tab)
 	char *types[] = {"AST_TYPE_UNDEFINED",
 		"AST_TYPE_PROGRAM",
 		"AST_TYPE_IDENTIFIER",
-		"AST_TYPE_VAR_DECLEAR",
+		"AST_TYPE_VAR_DECLARE",
 		"AST_TYPE_VAR_TYPE",
 		"AST_TYPE_VAR_SET_VALUE",
 		"AST_TYPE_VAR_GET_VALUE",
@@ -83,21 +83,21 @@ static void print_ast(AST_NODE *node, int tab)
 	}
 	printf("Data: \"%s\"\n", node->data);
 }
-/* 打印AST树 */
-static void print_ast_tree_sub(AST_NODE *node, int re)
+
+static void _print_ast(AST_NODE *node, int re)
 {
-	print_ast(node, re);
+	_print_ast_node(node, re);
 	int i = 0;
 	while(node->nodes[i] != NULL)
 	{
-		print_ast_tree_sub(node->nodes[i], re + 1);
-		i += 1;
+		_print_ast(node->nodes[i], re + 1);
+		i++;
 	}
 }
-/* 打印AST树 */
-void print_ast_tree(AST_NODE *node)
+/* print AST */
+void print_ast(AST_NODE *node)
 {
-	print_ast_tree_sub(node, 0);
+	_print_ast(node, 0);
 }
 
 void show_functions(void)

@@ -32,11 +32,11 @@ int main(int argc, char *argv[])
 
 	ast_node_init(&ast);
 	ast.type = AST_TYPE_PROGRAM;
-	ast_tree_build(&ast, tk);
+	ast_build(&ast, tk);
 
 	//print_tokens(tk);
 
-	print_ast_tree(&ast);
+	print_ast(&ast);
 
 	//register_function(&ast);
 	//register_variable(&ast);
