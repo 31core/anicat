@@ -4,11 +4,11 @@
 #include <lib/string.h>
 
 /* detect the positions of symbols */
-static int get_flag_pos(int ret[], char *str)
+static int get_flag_pos(int ret[], const char *str)
 {
 	int i = 0;
 	int size = 1;
-	char *symbol = " =()[]{},:;+-*/\t\n";
+	const char *symbol = " =()[]{},:;+-*/\t\n";
 	while(str[i] != '\0')
 	{
 		for(int j = 0; j < strlen(symbol); j++)
@@ -16,10 +16,10 @@ static int get_flag_pos(int ret[], char *str)
 			if(str[i] == symbol[j])
 			{
 				ret[size] = i;
-				size += 1;
+				size++;
 			}
 		}
-		i += 1;
+		i++;
 	}
 	ret[0] = -1;
 	ret[size] = strlen(str) + 1;
@@ -40,7 +40,7 @@ static int is_keyword(char *str)
 }
 
 /* 词法分析 */
-void generate_token(TOKEN tk[], char *code)
+void generate_token(TOKEN *tk, const char *code)
 {
 	int symbol_list[1024];
 	int iter = 0;
@@ -80,10 +80,6 @@ void generate_token(TOKEN tk[], char *code)
 			token_size--;
 			i--;
 		}
-		else
-		{
-			printf("|%s|\n", tk[i].name);
-		}
 	}
 	/* detect types */
 	for(int i = 0; i < token_size; i++)
@@ -120,6 +116,7 @@ void generate_token(TOKEN tk[], char *code)
 				tk[i].type = TOKEN_TYPE_EQU;
 			}
 		}
+		/* <, >, <=, >= */
 		else if(tk[i].name[0] == '>' || tk[i].name[0] == '<')
 		{
 			/* >= or <= */
@@ -127,13 +124,15 @@ void generate_token(TOKEN tk[], char *code)
 			{
 				if(tk[i].name[0] == '>')
 				{
+					strcpy(tk[i].name, ">=");
 					tk[i].type = TOKEN_TYPE_GREQU;
 				}
 				else
 				{
+					strcpy(tk[i].name, "<=");
 					tk[i].type = TOKEN_TYPE_LEEQU;
 				}
-				strcpy(tk[i].name, "==");
+
 				for(int j = i + 1; j < token_size - 1; j++)
 				{
 					tk[j] = tk[j + 1];

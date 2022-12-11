@@ -6,7 +6,7 @@
 void print_token(TOKEN tk)
 {
 	printf("Name: \"%s\"\n", tk.name);
-	char *types[] = {"TOKEN_TYPE_UNKOWN",
+	const char *types[] = {"TOKEN_TYPE_UNKOWN",
 		"TOKEN_TYPE_NAME",
 		"TOKEN_TYPE_KEYWORD",
 		"TOKEN_TYPE_EQU",
@@ -49,7 +49,7 @@ static void _print_ast_node(AST_NODE *node, int tab)
 	{
 		printf("`--");
 	}
-	char *types[] = {"AST_TYPE_UNDEFINED",
+	const char *types[] = {"AST_TYPE_UNDEFINED",
 		"AST_TYPE_PROGRAM",
 		"AST_TYPE_IDENTIFIER",
 		"AST_TYPE_VAR_DECLARE",
@@ -61,7 +61,10 @@ static void _print_ast_node(AST_NODE *node, int tab)
 		"AST_TYPE_CODE_BLOCK",
 		"AST_TYPE_PARAMS",
 		"AST_TYPE_IF",
-		"AST_TYPE_EXPRESS",
+		"AST_TYPE_IFELSE",
+		"AST_TYPE_ELSE",
+		"AST_TYPE_FOR",
+		"AST_TYPE_WHILE",
 		"AST_TYPE_ADD",
 		"AST_TYPE_SUB",
 		"AST_TYPE_MUL",
@@ -72,8 +75,7 @@ static void _print_ast_node(AST_NODE *node, int tab)
 		"AST_TYPE_LEEQU",
 		"AST_TYPE_EQU",
 		"AST_TYPE_NUMBER",
-		"AST_TYPE_STRING",
-		"AST_TYPE_VARIABLE"
+		"AST_TYPE_STRING"
 	};
 	printf("Type: %s\n", types[node->type]);
 

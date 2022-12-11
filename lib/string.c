@@ -1,16 +1,17 @@
 #include <ctype.h>
+#include <stdbool.h>
 
 /* 检测是否为数字 */
-int is_number(char *str)
+bool is_number(const char *str)
 {
 	int i = 0;
 	while(str[i] != '\0')
 	{
 		if(!isdigit(str[i]))
 		{
-			return 0;
+			return false;
 		}
-		i += 1;
+		i++;
 	}
-	return 1;
+	return true;
 }

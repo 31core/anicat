@@ -8,11 +8,12 @@ int ast_node_buf_size = 1024;
 /* initialize AST node */
 void ast_node_init(AST_NODE *ast)
 {
-	ast->type = 0;
+	ast->type = AST_TYPE_UNDEFINED;
+	ast->data[0] = '\0';
 
 	for(int i = 0; i < 100; i++)
 	{
-		ast->nodes[i] = 0;
+		ast->nodes[i] = NULL;
 	}
 }
 /* initialize AST nodes management */
@@ -71,7 +72,7 @@ struct layer
 #define LAST_NODE top_ast->nodes[ast_index - 1]
 #define IS_LAST_NODE ast_index > 0
 /* build an AST from tokens */
-int ast_build(AST_NODE *top_ast, TOKEN tk[])
+int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 {
 	int token_index = 0;
 	int ast_index = 0;
@@ -276,16 +277,6 @@ int ast_build(AST_NODE *top_ast, TOKEN tk[])
 			else
 			{
 				CURRENT_NODE->type = AST_TYPE_GREQU;
-			}
-
-			if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_IDENTIFIER ||
-				LAST_NODE->type == AST_TYPE_NUMBER))
-			{
-				CURRENT_NODE->nodes[0] = LAST_NODE;
-			}
-			else
-			{
-				CURRENT_NODE->nodes[0] = LAST_NODE->nodes[1];
 			}
 
 			if(LAST_NODE->type == AST_TYPE_VAR_SET_VALUE)

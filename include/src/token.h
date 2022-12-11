@@ -1,4 +1,7 @@
 #pragma once
+
+#include <stdint.h>
+
 #define TOKEN_TYPE_UNKOWN	0
 #define TOKEN_TYPE_NAME		1
 #define TOKEN_TYPE_KEYWORD	2
@@ -25,10 +28,10 @@
 
 struct token
 {
-	int type;
+	uint8_t type;
 	char name[20];
 };
 
 typedef struct token TOKEN;
 
-void generate_token(TOKEN*, char*);
+void generate_token(TOKEN *, const char *);
