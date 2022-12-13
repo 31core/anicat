@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <string.h>
 #include <src/ast.h>
 #include <src/token.h>
+#include <src/vm.h>
 
 /* print token */
-void print_token(TOKEN tk)
+void print_token(const TOKEN tk)
 {
 	const char *types[] = {"TOKEN_TYPE_UNKOWN",
 		"TOKEN_TYPE_NAME",
@@ -32,7 +34,7 @@ void print_token(TOKEN tk)
 	printf("%s %s\n", tk.name, types[tk.type]);
 }
 /* print token list */
-void print_tokens(TOKEN *tk)
+void print_tokens(const TOKEN *tk)
 {
 	int i = 0;
 	while(tk[i].type != 0)
@@ -42,7 +44,7 @@ void print_tokens(TOKEN *tk)
 	}
 }
 /* print AST */
-static void _print_ast_node(AST_NODE *node, int tab)
+static void _print_ast_node(const AST_NODE *node, int tab)
 {
 	for(int j = 0; j < tab; j++)
 	{
@@ -79,7 +81,7 @@ static void _print_ast_node(AST_NODE *node, int tab)
 	printf("%s %s\n", types[node->type], node->data);
 }
 
-static void _print_ast(AST_NODE *node, int re)
+static void _print_ast(const AST_NODE *node, int re)
 {
 	_print_ast_node(node, re);
 	int i = 0;
@@ -90,7 +92,13 @@ static void _print_ast(AST_NODE *node, int re)
 	}
 }
 /* print AST */
-void print_ast(AST_NODE *node)
+void print_ast(const AST_NODE *node)
 {
 	_print_ast(node, 0);
+}
+
+void print_vm(const VM *vm)
+{
+	printf("C0: %lx\n", vm->c0);
+	printf("IP: %lx\n", vm->ip);
 }

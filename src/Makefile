@@ -1,1 +1,0 @@
-objs += src/main.o src/token.o src/debug.o src/ast.o src/vm.o
