@@ -97,6 +97,16 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 			{
 				CURRENT_NODE->type = AST_TYPE_IF;
 			}
+			/* while expression */
+			else if(!strcmp(tk[token_index].name, "while"))
+			{
+				CURRENT_NODE->type = AST_TYPE_WHILE;
+			}
+			/* for expression */
+			else if(!strcmp(tk[token_index].name, "for"))
+			{
+				CURRENT_NODE->type = AST_TYPE_FOR;
+			}
 		}
 		/* indentifiers, numbers or strings will be added as child nodes of the top node */
 		else if(tk[token_index].type == TOKEN_TYPE_NAME ||
@@ -134,10 +144,13 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 			}
 			else if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_VAR_SET_VALUE)
 			{
-				if(LAST_NODE->nodes[1] != NULL && (LAST_NODE->nodes[1]->type == AST_TYPE_ADD ||
-					LAST_NODE->nodes[1]->type == AST_TYPE_SUB ||
-					LAST_NODE->nodes[1]->type == AST_TYPE_MUL ||
-					LAST_NODE->nodes[1]->type == AST_TYPE_DIV))
+				if(LAST_NODE->nodes[1] != NULL && LAST_NODE->nodes[1]->nodes[1] != NULL &&  (LAST_NODE->nodes[1]->nodes[1]->type == AST_TYPE_MUL ||
+					LAST_NODE->nodes[1]->nodes[1]->type == AST_TYPE_DIV))
+				{
+					LAST_NODE->nodes[1]->nodes[1]->nodes[1] = CURRENT_NODE;
+				}
+				else if(LAST_NODE->nodes[1] != NULL && (LAST_NODE->nodes[1]->type == AST_TYPE_ADD ||
+					LAST_NODE->nodes[1]->type == AST_TYPE_SUB))
 				{
 					LAST_NODE->nodes[1]->nodes[1] = CURRENT_NODE;
 				}
@@ -147,10 +160,13 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 				}
 				ast_index--;
 			}
+			else if(IS_LAST_NODE && LAST_NODE->nodes[1] != NULL && (LAST_NODE->nodes[1]->type == AST_TYPE_MUL ||
+				LAST_NODE->nodes[1]->type == AST_TYPE_DIV))
+			{
+				LAST_NODE->nodes[1]->nodes[1] = CURRENT_NODE;
+			}
 			else if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_ADD ||
 				LAST_NODE->type == AST_TYPE_SUB ||
-				LAST_NODE->type == AST_TYPE_MUL ||
-				LAST_NODE->type == AST_TYPE_DIV ||
 				LAST_NODE->type == AST_TYPE_EQU ||
 				LAST_NODE->type == AST_TYPE_LE ||
 				LAST_NODE->type == AST_TYPE_GR ||
@@ -165,14 +181,15 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 		{
 			/* * function definition
 			   * if expression */
-			if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_FUNC_DEF || LAST_NODE->type == AST_TYPE_IF))
+			if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_FUNC_DEF || LAST_NODE->type == AST_TYPE_IF ||
+				LAST_NODE->type == AST_TYPE_WHILE || LAST_NODE->type == AST_TYPE_FOR))
 			{
 				CURRENT_NODE->type = AST_TYPE_PARAMS;
 				if(LAST_NODE->type == AST_TYPE_FUNC_DEF)
 				{
 					LAST_NODE->nodes[1] = CURRENT_NODE;
 				}
-				else if(LAST_NODE->type == AST_TYPE_IF)
+				else if(LAST_NODE->type == AST_TYPE_IF || LAST_NODE->type == AST_TYPE_WHILE || LAST_NODE->type == AST_TYPE_FOR)
 				{
 					LAST_NODE->nodes[0] = CURRENT_NODE;
 				}
@@ -196,14 +213,15 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 		/* code block such as 'if(){}' and func (){} */
 		else if(tk[token_index].type == TOKEN_TYPE_LL_BKT)
 		{
-			if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_FUNC_DEF || LAST_NODE->type == AST_TYPE_IF))
+			if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_FUNC_DEF || LAST_NODE->type == AST_TYPE_IF ||
+				LAST_NODE->type == AST_TYPE_WHILE || LAST_NODE->type == AST_TYPE_FOR))
 			{
 				CURRENT_NODE->type = AST_TYPE_CODE_BLOCK;
 				if(LAST_NODE->type == AST_TYPE_FUNC_DEF)
 				{
 					LAST_NODE->nodes[2] = CURRENT_NODE;
 				}
-				else if(LAST_NODE->type == AST_TYPE_IF)
+				else if(LAST_NODE->type == AST_TYPE_IF || LAST_NODE->type == AST_TYPE_WHILE || LAST_NODE->type == AST_TYPE_FOR)
 				{
 					LAST_NODE->nodes[1] = CURRENT_NODE;
 				}
@@ -279,16 +297,26 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 				CURRENT_NODE->type = AST_TYPE_GREQU;
 			}
 
+			AST_NODE **last_node;
 			if(LAST_NODE->type == AST_TYPE_VAR_SET_VALUE)
 			{
-				CURRENT_NODE->nodes[0] = LAST_NODE->nodes[1];
-				LAST_NODE->nodes[1] = CURRENT_NODE;
+				last_node = &LAST_NODE->nodes[1];
 			}
 			else
 			{
-				CURRENT_NODE->nodes[0] = LAST_NODE;
-				LAST_NODE = CURRENT_NODE;
+				last_node = &LAST_NODE;
 			}
+			if(CURRENT_NODE->type == AST_TYPE_MUL && (*last_node)->type == AST_TYPE_ADD)
+			{
+				CURRENT_NODE->nodes[0] = (*last_node)->nodes[1];
+				(*last_node)->nodes[1] = CURRENT_NODE;
+			}
+			else
+			{
+				CURRENT_NODE->nodes[0] = *last_node;
+				*last_node = CURRENT_NODE;
+			}
+
 			ast_index--;
 		}
 		/* i = x */

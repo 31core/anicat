@@ -5,7 +5,6 @@
 /* print token */
 void print_token(TOKEN tk)
 {
-	printf("Name: \"%s\"\n", tk.name);
 	const char *types[] = {"TOKEN_TYPE_UNKOWN",
 		"TOKEN_TYPE_NAME",
 		"TOKEN_TYPE_KEYWORD",
@@ -30,7 +29,7 @@ void print_token(TOKEN tk)
 		"TOKEN_TYPE_LEEQU",
 		"TOKEN_TYPE_STRING"
 	};
-	printf("Type: %s\n", types[tk.type]);
+	printf("%s %s\n", tk.name, types[tk.type]);
 }
 /* print token list */
 void print_tokens(TOKEN *tk)
@@ -77,13 +76,7 @@ static void _print_ast_node(AST_NODE *node, int tab)
 		"AST_TYPE_NUMBER",
 		"AST_TYPE_STRING"
 	};
-	printf("Type: %s\n", types[node->type]);
-
-	for(int j = 0; j < tab; j++)
-	{
-		printf(" --");
-	}
-	printf("Data: \"%s\"\n", node->data);
+	printf("%s %s\n", types[node->type], node->data);
 }
 
 static void _print_ast(AST_NODE *node, int re)
@@ -100,22 +93,4 @@ static void _print_ast(AST_NODE *node, int re)
 void print_ast(AST_NODE *node)
 {
 	_print_ast(node, 0);
-}
-
-void show_functions(void)
-{
-	printf("--- Functions ---\n");
-	for(int i = 0; i < func_count; i++)
-	{
-		printf("%d: %s\n", i, functions[i].name);
-	}
-}
-
-void show_variables(void)
-{
-	printf("--- Global variables ---\n");
-	for(int i = 0; i < var_count; i++)
-	{
-		printf("%d: %s\n", i, variables[i].name);
-	}
 }

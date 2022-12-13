@@ -37,8 +37,4 @@ int main(int argc, char *argv[])
 	//print_tokens(tk);
 
 	print_ast(&ast);
-
-	//register_function(&ast);
-	//register_variable(&ast);
-	//execute_func(get_func_ptr("main"));
 }
