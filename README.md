@@ -10,7 +10,7 @@ Anicat is a programming written in C, surpporting static typing.
 |test   |Scripts for tests.|
 ### 0x2 Build
 ```shell
+$ mkdir build && cd build
+$ cmake ..
 $ make #build
-$ make check #run check
-$ make clean #clean up outputs
 ```

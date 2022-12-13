@@ -235,7 +235,6 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 			{
 				CURRENT_NODE->type = AST_TYPE_VAR_TYPE;
 				LAST_NODE->nodes[1] = CURRENT_NODE;
-				LAST_NODE = CURRENT_NODE;
 			}
 			else if(LAST_NODE->type == AST_TYPE_IDENTIFIER)
 			{

@@ -1,12 +1,15 @@
 func test(var i: Int)
 {
-	print("i");
+	print(i);
 }
 
 func main()
 {
 	var i: Int;
-	i = 10; 
-	test(i);
-	print("Hello,world");
+	i = 1 + 2 * 3 + 4;
+	test(i + 1);
+	if(i == 11)
+	{
+		print(11);
+	}
 }

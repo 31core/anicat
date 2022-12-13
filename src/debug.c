@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <src/function.h>
-#include <src/variable.h>
+#include <src/ast.h>
+#include <src/token.h>
 
 /* print token */
 void print_token(TOKEN tk)
@@ -46,7 +46,7 @@ static void _print_ast_node(AST_NODE *node, int tab)
 {
 	for(int j = 0; j < tab; j++)
 	{
-		printf("`--");
+		printf("\t");
 	}
 	const char *types[] = {"AST_TYPE_UNDEFINED",
 		"AST_TYPE_PROGRAM",
