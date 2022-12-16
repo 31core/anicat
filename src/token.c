@@ -116,6 +116,16 @@ void generate_token(TOKEN *tk, const char *code)
 				tk[i].type = TOKEN_TYPE_EQU;
 			}
 		}
+		else if(tk[i].name[0] == '-' && tk[i + 1].name[0] == '>')
+		{
+			tk[i].type = TOKEN_TYPE_EXPLAIN;
+			strcpy(tk[i].name, "->");
+			for(int j = i + 1; j < token_size - 1; j++)
+			{
+				tk[j] = tk[j + 1];
+			}
+			token_size--;
+		}
 		/* <, >, <=, >= */
 		else if(tk[i].name[0] == '>' || tk[i].name[0] == '<')
 		{

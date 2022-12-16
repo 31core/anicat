@@ -107,6 +107,14 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 			{
 				CURRENT_NODE->type = AST_TYPE_FOR;
 			}
+			else if(!strcmp(tk[token_index].name, "break"))
+			{
+				CURRENT_NODE->type = AST_TYPE_BREAK;
+			}
+			else if(!strcmp(tk[token_index].name, "return"))
+			{
+				CURRENT_NODE->type = AST_TYPE_RETURN;
+			}
 		}
 		/* indentifiers, numbers or strings will be added as child nodes of the top node */
 		else if(tk[token_index].type == TOKEN_TYPE_NAME ||
@@ -157,6 +165,24 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 				else
 				{
 					LAST_NODE->nodes[1] = CURRENT_NODE;
+				}
+				ast_index--;
+			}
+			else if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_RETURN)
+			{
+				if(LAST_NODE->nodes[0] != NULL && LAST_NODE->nodes[0]->nodes[1] != NULL &&  (LAST_NODE->nodes[0]->nodes[1]->type == AST_TYPE_MUL ||
+					LAST_NODE->nodes[0]->nodes[1]->type == AST_TYPE_DIV))
+				{
+					LAST_NODE->nodes[0]->nodes[1]->nodes[1] = CURRENT_NODE;
+				}
+				else if(LAST_NODE->nodes[0] != NULL && (LAST_NODE->nodes[0]->type == AST_TYPE_ADD ||
+					LAST_NODE->nodes[0]->type == AST_TYPE_SUB))
+				{
+					LAST_NODE->nodes[0]->nodes[1] = CURRENT_NODE;
+				}
+				else
+				{
+					LAST_NODE->nodes[0] = CURRENT_NODE;
 				}
 				ast_index--;
 			}
@@ -245,6 +271,11 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 				ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
 				CURRENT_NODE->type = AST_TYPE_VAR_TYPE;
 				LAST_NODE->nodes[1] = CURRENT_NODE;
+			}
+			else if(LAST_NODE->type == AST_TYPE_FUNC_DEF)
+			{
+				CURRENT_NODE->type = AST_TYPE_VAR_TYPE;
+				LAST_NODE->nodes[3] = CURRENT_NODE;
 			}
 		}
 		/* operations */

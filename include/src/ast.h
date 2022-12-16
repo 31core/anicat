@@ -30,6 +30,8 @@
 #define AST_TYPE_EQU			24 // ==
 #define AST_TYPE_NUMBER			25
 #define AST_TYPE_STRING			26
+#define AST_TYPE_BREAK			27
+#define AST_TYPE_RETURN			28
 
 /* AST node */
 struct ast_node

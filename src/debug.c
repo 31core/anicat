@@ -76,7 +76,10 @@ static void _print_ast_node(const AST_NODE *node, int tab)
 		"AST_TYPE_LEEQU",
 		"AST_TYPE_EQU",
 		"AST_TYPE_NUMBER",
-		"AST_TYPE_STRING"
+		"AST_TYPE_STRING",
+		"AST_TYPE_BREAK",
+		"AST_TYPE_RETURN"
+
 	};
 	printf("%s %s\n", types[node->type], node->data);
 }
