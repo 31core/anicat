@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <src/ast.h>
+#include <src/vm.h>
 #include <src/debug.h>
 #include <src/token.h>
 
