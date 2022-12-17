@@ -1,15 +1,17 @@
-func test(var i: Int)
+func fib(var i: Int) -> Int
 {
-	print(i);
+	if(n == 1)
+	{
+		return 1;
+	}
+	if(n == 2)
+	{
+		return 2;
+	}
+	return fib(n - 1) + fib(n - 2);
 }
 
 func main()
 {
-	var i: Int;
-	i = 1 + 2 * 3 + 4;
-	test(i + 1);
-	if(i == 11)
-	{
-		print(11);
-	}
+	print(fib(45));
 }

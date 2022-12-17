@@ -133,7 +133,7 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 			{
 				CURRENT_NODE->type = AST_TYPE_STRING;
 			}
-			
+
 			strcpy(CURRENT_NODE->data, tk[token_index].name);
 			if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_FUNC_DEF)
 			{
@@ -149,58 +149,6 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 			{
 				LAST_NODE->nodes[0] = CURRENT_NODE;
 				ast_index -= 2;
-			}
-			else if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_VAR_SET_VALUE)
-			{
-				if(LAST_NODE->nodes[1] != NULL && LAST_NODE->nodes[1]->nodes[1] != NULL &&  (LAST_NODE->nodes[1]->nodes[1]->type == AST_TYPE_MUL ||
-					LAST_NODE->nodes[1]->nodes[1]->type == AST_TYPE_DIV))
-				{
-					LAST_NODE->nodes[1]->nodes[1]->nodes[1] = CURRENT_NODE;
-				}
-				else if(LAST_NODE->nodes[1] != NULL && (LAST_NODE->nodes[1]->type == AST_TYPE_ADD ||
-					LAST_NODE->nodes[1]->type == AST_TYPE_SUB))
-				{
-					LAST_NODE->nodes[1]->nodes[1] = CURRENT_NODE;
-				}
-				else
-				{
-					LAST_NODE->nodes[1] = CURRENT_NODE;
-				}
-				ast_index--;
-			}
-			else if(IS_LAST_NODE && LAST_NODE->type == AST_TYPE_RETURN)
-			{
-				if(LAST_NODE->nodes[0] != NULL && LAST_NODE->nodes[0]->nodes[1] != NULL &&  (LAST_NODE->nodes[0]->nodes[1]->type == AST_TYPE_MUL ||
-					LAST_NODE->nodes[0]->nodes[1]->type == AST_TYPE_DIV))
-				{
-					LAST_NODE->nodes[0]->nodes[1]->nodes[1] = CURRENT_NODE;
-				}
-				else if(LAST_NODE->nodes[0] != NULL && (LAST_NODE->nodes[0]->type == AST_TYPE_ADD ||
-					LAST_NODE->nodes[0]->type == AST_TYPE_SUB))
-				{
-					LAST_NODE->nodes[0]->nodes[1] = CURRENT_NODE;
-				}
-				else
-				{
-					LAST_NODE->nodes[0] = CURRENT_NODE;
-				}
-				ast_index--;
-			}
-			else if(IS_LAST_NODE && LAST_NODE->nodes[1] != NULL && (LAST_NODE->nodes[1]->type == AST_TYPE_MUL ||
-				LAST_NODE->nodes[1]->type == AST_TYPE_DIV))
-			{
-				LAST_NODE->nodes[1]->nodes[1] = CURRENT_NODE;
-			}
-			else if(IS_LAST_NODE && (LAST_NODE->type == AST_TYPE_ADD ||
-				LAST_NODE->type == AST_TYPE_SUB ||
-				LAST_NODE->type == AST_TYPE_EQU ||
-				LAST_NODE->type == AST_TYPE_LE ||
-				LAST_NODE->type == AST_TYPE_GR ||
-				LAST_NODE->type == AST_TYPE_LEEQU ||
-				LAST_NODE->type == AST_TYPE_GREQU))
-			{
-				LAST_NODE->nodes[1] = CURRENT_NODE;
-				ast_index--;
 			}
 		}
 		else if(tk[token_index].type == TOKEN_TYPE_LS_BKT)
@@ -327,25 +275,8 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 				CURRENT_NODE->type = AST_TYPE_GREQU;
 			}
 
-			AST_NODE **last_node;
-			if(LAST_NODE->type == AST_TYPE_VAR_SET_VALUE)
-			{
-				last_node = &LAST_NODE->nodes[1];
-			}
-			else
-			{
-				last_node = &LAST_NODE;
-			}
-			if(CURRENT_NODE->type == AST_TYPE_MUL && (*last_node)->type == AST_TYPE_ADD)
-			{
-				CURRENT_NODE->nodes[0] = (*last_node)->nodes[1];
-				(*last_node)->nodes[1] = CURRENT_NODE;
-			}
-			else
-			{
-				CURRENT_NODE->nodes[0] = *last_node;
-				*last_node = CURRENT_NODE;
-			}
+			CURRENT_NODE->nodes[0] = LAST_NODE;
+			LAST_NODE = CURRENT_NODE;
 
 			ast_index--;
 		}
@@ -364,6 +295,76 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 		{
 			top_ast->nodes[ast_index] = NULL;
 			return token_index + 1;
+		}
+		/* ',' or ';' */
+		else if(tk[token_index].type == TOKEN_TYPE_SPLIT)
+		{
+			int i = 1;
+			int deleted = 0;
+			/* merge '+' '-' '*' '/' nodes */
+			while(i <= ast_index && top_ast->nodes[ast_index - i]->type != AST_TYPE_UNDEFINED)
+			{
+				if(top_ast->nodes[ast_index - i]->type == AST_TYPE_ADD ||
+					top_ast->nodes[ast_index - i]->type == AST_TYPE_SUB ||
+					top_ast->nodes[ast_index - i]->type == AST_TYPE_MUL ||
+					top_ast->nodes[ast_index - i]->type == AST_TYPE_DIV)
+				{
+					if(top_ast->nodes[ast_index - i + 1]->type == AST_TYPE_ADD || top_ast->nodes[ast_index - i + 1]->type == AST_TYPE_SUB)
+					{
+						top_ast->nodes[ast_index - i]->nodes[1] = top_ast->nodes[ast_index - i + 1]->nodes[0];
+						top_ast->nodes[ast_index - i + 1]->nodes[0] = top_ast->nodes[ast_index - i];
+						top_ast->nodes[ast_index - i] = top_ast->nodes[ast_index - i + 1];
+						for(int j = i; j > 1; j--)
+						{
+							top_ast->nodes[ast_index - j + 1] = top_ast->nodes[ast_index - j + 2];
+						}
+						deleted++;
+					}
+					else if(top_ast->nodes[ast_index - i + 1]->type == AST_TYPE_MUL || top_ast->nodes[ast_index - i + 1]->type == AST_TYPE_DIV)
+					{
+						if(top_ast->nodes[ast_index - i]->type == AST_TYPE_ADD || top_ast->nodes[ast_index - i]->type == AST_TYPE_SUB)
+						{
+							top_ast->nodes[ast_index - i]->nodes[1] = top_ast->nodes[ast_index - i + 1];
+						}
+						else
+						{
+							top_ast->nodes[ast_index - i]->nodes[1] = top_ast->nodes[ast_index - i + 1]->nodes[0];
+							top_ast->nodes[ast_index - i + 1]->nodes[0] = top_ast->nodes[ast_index - i];
+							top_ast->nodes[ast_index - i] = top_ast->nodes[ast_index - i + 1];
+						}
+						for(int j = i; j > 1; j--)
+						{
+							top_ast->nodes[ast_index - j + 1] = top_ast->nodes[ast_index - j + 2];
+						}
+						deleted++;
+					}
+					else
+					{
+						top_ast->nodes[ast_index - i]->nodes[1] = top_ast->nodes[ast_index - i + 1];
+						/* delete top_ast->nodes[ast_index - i + 1] */
+						for(int j = i; j > 1; j--)
+						{
+							top_ast->nodes[ast_index - j + 1] = top_ast->nodes[ast_index - j + 2];
+						}
+						deleted++;
+					}
+				}
+				i++;
+			}
+			ast_index -= deleted;
+
+			if(ast_index >= 2 && (top_ast->nodes[ast_index - 2]->type == AST_TYPE_VAR_SET_VALUE))
+			{
+				top_ast->nodes[ast_index - 2]->nodes[1] = LAST_NODE;
+				LAST_NODE = CURRENT_NODE;
+				ast_index--;
+			}
+			else if(ast_index >= 2 && (top_ast->nodes[ast_index - 2]->type == AST_TYPE_RETURN))
+			{
+				top_ast->nodes[ast_index - 2]->nodes[0] = LAST_NODE;
+				LAST_NODE = CURRENT_NODE;
+				ast_index--;
+			}
 		}
 		token_index++;
 		ast_index++;
