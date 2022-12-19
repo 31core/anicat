@@ -32,16 +32,15 @@
 #define AST_TYPE_STRING			26
 #define AST_TYPE_BREAK			27
 #define AST_TYPE_RETURN			28
+#define AST_SPLIT_REMOVABLE		100 //will be removed on returning
 
 /* AST node */
-struct ast_node
+typedef struct ast_node
 {
 	int8_t type;
 	char data[20];
 	struct ast_node *nodes[100];
-};
-
-typedef struct ast_node AST_NODE;
+} AST_NODE;
 
 void ast_node_init(AST_NODE *);
 void ast_node_manage_init(void);

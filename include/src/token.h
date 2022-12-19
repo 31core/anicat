@@ -26,12 +26,10 @@
 #define TOKEN_TYPE_LEEQU	21 // ==
 #define TOKEN_TYPE_STRING	22
 
-struct token
+typedef struct token
 {
 	uint8_t type;
 	char name[20];
-};
-
-typedef struct token TOKEN;
+} TOKEN;
 
 void generate_token(TOKEN *, const char *);

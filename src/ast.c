@@ -2,7 +2,7 @@
 #include <string.h>
 #include <src/ast.h>
 
-struct ast_node *ast_nodes;
+AST_NODE *ast_nodes;
 int ast_node_buf_size = 1024;
 
 /* initialize AST node */
@@ -62,11 +62,91 @@ void ast_node_append(AST_NODE *ast, AST_NODE *target, int p)
 	ast->nodes[p + 1] = NULL;
 }
 
-struct layer
+/* merge '+' '-' '*' '/' nodes */
+static void merge_op(AST_NODE *top_ast, int *ast_index)
 {
-	AST_NODE *node;
-	int potition;
-};
+	int i = 1;
+	int deleted = 0;
+	while(i <= *ast_index && top_ast->nodes[*ast_index - i]->type != AST_SPLIT_REMOVABLE)
+	{
+		if(top_ast->nodes[*ast_index - i]->type == AST_TYPE_ADD ||
+			top_ast->nodes[*ast_index - i]->type == AST_TYPE_SUB ||
+			top_ast->nodes[*ast_index - i]->type == AST_TYPE_MUL ||
+			top_ast->nodes[*ast_index - i]->type == AST_TYPE_DIV)
+		{
+			if(top_ast->nodes[*ast_index - i + 1]->type == AST_TYPE_ADD || top_ast->nodes[*ast_index - i + 1]->type == AST_TYPE_SUB)
+			{
+				top_ast->nodes[*ast_index - i]->nodes[1] = top_ast->nodes[*ast_index - i + 1]->nodes[0];
+				top_ast->nodes[*ast_index - i + 1]->nodes[0] = top_ast->nodes[*ast_index - i];
+				top_ast->nodes[*ast_index - i] = top_ast->nodes[*ast_index - i + 1];
+				for(int j = i; j > 1; j--)
+				{
+					top_ast->nodes[*ast_index - j + 1] = top_ast->nodes[*ast_index - j + 2];
+				}
+				deleted++;
+			}
+			else if(top_ast->nodes[*ast_index - i + 1]->type == AST_TYPE_MUL || top_ast->nodes[*ast_index - i + 1]->type == AST_TYPE_DIV)
+			{
+				if(top_ast->nodes[*ast_index - i]->type == AST_TYPE_ADD || top_ast->nodes[*ast_index - i]->type == AST_TYPE_SUB)
+				{
+					top_ast->nodes[*ast_index - i]->nodes[1] = top_ast->nodes[*ast_index - i + 1];
+				}
+				else
+				{
+					top_ast->nodes[*ast_index - i]->nodes[1] = top_ast->nodes[*ast_index - i + 1]->nodes[0];
+					top_ast->nodes[*ast_index - i + 1]->nodes[0] = top_ast->nodes[*ast_index - i];
+					top_ast->nodes[*ast_index - i] = top_ast->nodes[*ast_index - i + 1];
+				}
+				for(int j = i; j > 1; j--)
+				{
+					top_ast->nodes[*ast_index - j + 1] = top_ast->nodes[*ast_index - j + 2];
+				}
+				deleted++;
+			}
+			else
+			{
+				top_ast->nodes[*ast_index - i]->nodes[1] = top_ast->nodes[*ast_index - i + 1];
+				/* delete top_ast->nodes[ast_index - i + 1] */
+				for(int j = i; j > 1; j--)
+				{
+					top_ast->nodes[*ast_index - j + 1] = top_ast->nodes[*ast_index - j + 2];
+				}
+				deleted++;
+			}
+		}
+		i++;
+	}
+	*ast_index -= deleted;
+}
+
+/* merge '==' '>' '<' '>=' '<=' nodes */
+static void merge_cmp(AST_NODE *top_ast, int *ast_index)
+{
+	int i = 1;
+	int deleted = 0;
+	while(i <= *ast_index && top_ast->nodes[*ast_index - i]->type != AST_SPLIT_REMOVABLE)
+	{
+		if(top_ast->nodes[*ast_index - i]->type == AST_TYPE_EQU ||
+			top_ast->nodes[*ast_index - i]->type == AST_TYPE_GR ||
+			top_ast->nodes[*ast_index - i]->type == AST_TYPE_GREQU ||
+			top_ast->nodes[*ast_index - i]->type == AST_TYPE_LE ||
+			top_ast->nodes[*ast_index - i]->type == AST_TYPE_LEEQU)
+		{
+			top_ast->nodes[*ast_index - i]->nodes[0] = top_ast->nodes[*ast_index - i - 1];
+			top_ast->nodes[*ast_index - i]->nodes[1] = top_ast->nodes[*ast_index - i + 1];
+			top_ast->nodes[*ast_index - i - 1] = top_ast->nodes[*ast_index - i];
+			/* delete top_ast->nodes[ast_index - i] and [ast_index - i + 1] */
+			for(int j = i; j > 1; j--)
+			{
+				top_ast->nodes[*ast_index - j] = top_ast->nodes[*ast_index - j + 2];
+			}
+			deleted += 2;
+			i++;
+		}
+		i++;
+	}
+	*ast_index -= deleted;
+}
 
 #define CURRENT_NODE top_ast->nodes[ast_index]
 #define LAST_NODE top_ast->nodes[ast_index - 1]
@@ -230,12 +310,7 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 		else if(tk[token_index].type == TOKEN_TYPE_ADD ||
 			tk[token_index].type == TOKEN_TYPE_SUB ||
 			tk[token_index].type == TOKEN_TYPE_MUL ||
-			tk[token_index].type == TOKEN_TYPE_DIV ||
-			tk[token_index].type == TOKEN_TYPE_LESS ||
-			tk[token_index].type == TOKEN_TYPE_GREATER ||
-			tk[token_index].type == TOKEN_TYPE_ISEQU ||
-			tk[token_index].type == TOKEN_TYPE_LEEQU ||
-			tk[token_index].type == TOKEN_TYPE_GREQU)
+			tk[token_index].type == TOKEN_TYPE_DIV)
 		{
 			/* detect symbol */
 			if(tk[token_index].type == TOKEN_TYPE_ADD)
@@ -254,7 +329,19 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 			{
 				CURRENT_NODE->type = AST_TYPE_DIV;
 			}
-			else if(tk[token_index].type == TOKEN_TYPE_LESS)
+
+			CURRENT_NODE->nodes[0] = LAST_NODE;
+			LAST_NODE = CURRENT_NODE;
+
+			ast_index--;
+		}
+		else if(tk[token_index].type == TOKEN_TYPE_LESS ||
+			tk[token_index].type == TOKEN_TYPE_GREATER ||
+			tk[token_index].type == TOKEN_TYPE_ISEQU ||
+			tk[token_index].type == TOKEN_TYPE_LEEQU ||
+			tk[token_index].type == TOKEN_TYPE_GREQU)
+		{
+			if(tk[token_index].type == TOKEN_TYPE_LESS)
 			{
 				CURRENT_NODE->type = AST_TYPE_LE;
 			}
@@ -274,11 +361,6 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 			{
 				CURRENT_NODE->type = AST_TYPE_GREQU;
 			}
-
-			CURRENT_NODE->nodes[0] = LAST_NODE;
-			LAST_NODE = CURRENT_NODE;
-
-			ast_index--;
 		}
 		/* i = x */
 		else if(tk[token_index].type == TOKEN_TYPE_EQU)
@@ -293,66 +375,24 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 		tk[token_index].type == TOKEN_TYPE_RM_BKT ||
 		tk[token_index].type == TOKEN_TYPE_RL_BKT)
 		{
-			top_ast->nodes[ast_index] = NULL;
+			merge_op(top_ast, &ast_index);
+			merge_cmp(top_ast, &ast_index);
+			/* remove AST_SPLIT_REMOVABLE nodes */
+			int i = 1;
+			while(top_ast->nodes[2 * i + 1] != NULL)
+			{
+				top_ast->nodes[i] = top_ast->nodes[2 * i];
+				i++;
+			}
+			top_ast->nodes[i] = NULL;
 			return token_index + 1;
 		}
 		/* ',' or ';' */
 		else if(tk[token_index].type == TOKEN_TYPE_SPLIT)
 		{
-			int i = 1;
-			int deleted = 0;
-			/* merge '+' '-' '*' '/' nodes */
-			while(i <= ast_index && top_ast->nodes[ast_index - i]->type != AST_TYPE_UNDEFINED)
-			{
-				if(top_ast->nodes[ast_index - i]->type == AST_TYPE_ADD ||
-					top_ast->nodes[ast_index - i]->type == AST_TYPE_SUB ||
-					top_ast->nodes[ast_index - i]->type == AST_TYPE_MUL ||
-					top_ast->nodes[ast_index - i]->type == AST_TYPE_DIV)
-				{
-					if(top_ast->nodes[ast_index - i + 1]->type == AST_TYPE_ADD || top_ast->nodes[ast_index - i + 1]->type == AST_TYPE_SUB)
-					{
-						top_ast->nodes[ast_index - i]->nodes[1] = top_ast->nodes[ast_index - i + 1]->nodes[0];
-						top_ast->nodes[ast_index - i + 1]->nodes[0] = top_ast->nodes[ast_index - i];
-						top_ast->nodes[ast_index - i] = top_ast->nodes[ast_index - i + 1];
-						for(int j = i; j > 1; j--)
-						{
-							top_ast->nodes[ast_index - j + 1] = top_ast->nodes[ast_index - j + 2];
-						}
-						deleted++;
-					}
-					else if(top_ast->nodes[ast_index - i + 1]->type == AST_TYPE_MUL || top_ast->nodes[ast_index - i + 1]->type == AST_TYPE_DIV)
-					{
-						if(top_ast->nodes[ast_index - i]->type == AST_TYPE_ADD || top_ast->nodes[ast_index - i]->type == AST_TYPE_SUB)
-						{
-							top_ast->nodes[ast_index - i]->nodes[1] = top_ast->nodes[ast_index - i + 1];
-						}
-						else
-						{
-							top_ast->nodes[ast_index - i]->nodes[1] = top_ast->nodes[ast_index - i + 1]->nodes[0];
-							top_ast->nodes[ast_index - i + 1]->nodes[0] = top_ast->nodes[ast_index - i];
-							top_ast->nodes[ast_index - i] = top_ast->nodes[ast_index - i + 1];
-						}
-						for(int j = i; j > 1; j--)
-						{
-							top_ast->nodes[ast_index - j + 1] = top_ast->nodes[ast_index - j + 2];
-						}
-						deleted++;
-					}
-					else
-					{
-						top_ast->nodes[ast_index - i]->nodes[1] = top_ast->nodes[ast_index - i + 1];
-						/* delete top_ast->nodes[ast_index - i + 1] */
-						for(int j = i; j > 1; j--)
-						{
-							top_ast->nodes[ast_index - j + 1] = top_ast->nodes[ast_index - j + 2];
-						}
-						deleted++;
-					}
-				}
-				i++;
-			}
-			ast_index -= deleted;
-
+			CURRENT_NODE->type = AST_SPLIT_REMOVABLE;
+			merge_op(top_ast, &ast_index);
+			merge_cmp(top_ast, &ast_index);
 			if(ast_index >= 2 && (top_ast->nodes[ast_index - 2]->type == AST_TYPE_VAR_SET_VALUE))
 			{
 				top_ast->nodes[ast_index - 2]->nodes[1] = LAST_NODE;
@@ -370,4 +410,5 @@ int ast_build(AST_NODE *top_ast, const TOKEN *tk)
 		ast_index++;
 		ast_node_append(top_ast, ast_node_manage_alloc(), ast_index);
 	}
+	return 0;
 }

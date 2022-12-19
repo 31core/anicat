@@ -4,5 +4,6 @@ project(Anicat)
 
 file(GLOB SOURCE src/*.c lib/*.c)
 
+add_definitions(-Wall)
 add_executable(Anicat ${SOURCE})
 target_include_directories(Anicat PUBLIC include)

@@ -26,15 +26,13 @@
 #define VM_TYPE_MEM32	0x2c
 #define VM_TYPE_MEM64	0x2d
 
-struct vm
+typedef struct vm
 {
 	uint64_t c0, ip, sp;
 	void *ram;
 	uint8_t *code, *stack;
 	uint8_t **heap;
-};
-
-typedef struct vm VM;
+} VM;
 
 void vm_init(VM *);
 void vm_run_instruction(VM *);
