@@ -26,6 +26,10 @@
 #define VM_TYPE_MEM32	0x2c
 #define VM_TYPE_MEM64	0x2d
 
+#define VM_DEV_STDIN	0
+#define VM_DEV_STDOUT	1
+#define VM_DEV_STDERR	2
+
 typedef struct vm
 {
 	uint64_t c0, ip, sp;

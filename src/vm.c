@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <src/vm.h>
 
 #define GET_CODE(vm) (vm->code[vm->ip - START_ADDR])
@@ -42,6 +43,7 @@ static struct arg get_arg(VM *vm)
 {
 	struct arg arg;
 	arg.type = GET_CODE(vm);
+	arg.value = 0;
 	vm->ip++;
 
 	arg.size = get_size_by_type(arg.type);
@@ -62,14 +64,14 @@ static struct arg get_arg(VM *vm)
 
 static uint64_t get_value(const VM *vm, const struct arg *arg)
 {
-	uint64_t value;
+	uint64_t value = 0;
 	if(arg->type >= VM_TYPE_VAL8 && arg->type <= VM_TYPE_VAL64)
 	{
 		value = arg->value;
 	}
 	else if(arg->type >= VM_TYPE_MEM8 && arg->type <= VM_TYPE_MEM64)
 	{
-		//vm_memcpy(vm, source.value, &tmp_data, source.size);
+		//TODO: 'vram_copy_from' here
 	}
 	else if(arg->type == VM_REG_C0)
 	{
@@ -82,7 +84,7 @@ static void set_value(VM *vm, const struct arg *arg, uint64_t value)
 {
 	if(arg->type >= VM_TYPE_MEM8 && arg->type <= VM_TYPE_MEM64)
 	{
-		//vm_memcpy(vm, GET_CODE , &tmp_data, target.size);
+		//TODO: 'vram_copy_to' here
 	}
 	else if(arg->type == VM_REG_C0)
 	{
@@ -119,6 +121,7 @@ void vm_run_instruction(VM *vm)
 	{
 		uint8_t instr = GET_CODE(vm);
 		vm->ip++;
+		/* 'mov' instruction */
 		if(instr == VM_INS_MOV)
 		{
 			struct arg source = get_arg(vm);
@@ -127,10 +130,11 @@ void vm_run_instruction(VM *vm)
 			uint64_t tmp_data = get_value(vm, &source);
 			set_value(vm, &target, tmp_data);
 		}
+		/* 'jmp' instruction */
 		else if(instr == VM_INS_JMP)
 		{
 			struct arg addr = get_arg(vm);
-			vm->ip = addr.value;
+			vm->ip = get_value(vm, &addr);
 		}
 		else if(instr >= VM_INS_ADD && instr <= VM_INS_DIV)
 		{
@@ -157,10 +161,38 @@ void vm_run_instruction(VM *vm)
 			}
 			set_value(vm, &source, tmp_data);
 		}
+		/* 'out' instruction */
+		else if(instr == VM_INS_OUT)
+		{
+			struct arg port = get_arg(vm);
+			struct arg data = get_arg(vm);
+			char c = get_value(vm, &data);
+			if(get_value(vm, &port) == VM_DEV_STDOUT)
+			{
+				write(STDOUT_FILENO, &c, sizeof(char));
+			}
+			else if(get_value(vm, &port) == VM_DEV_STDERR)
+			{
+				write(STDERR_FILENO, &c, sizeof(char));
+			}
+		}
+		/* 'in' instruction */
+		else if(instr == VM_INS_IN)
+		{
+			struct arg port = get_arg(vm);
+			char c = 0;
+			if(get_value(vm, &port) == VM_DEV_STDIN)
+			{
+				read(STDIN_FILENO, &c, sizeof(char));
+			}
+			vm->c0 = c;
+		}
+		/* 'hal' instruction */
 		else if(instr == VM_INS_HAL)
 		{
 			return;
 		}
+		/* handling illegal instructions */
 		else
 		{
 			printf("Illegal instruction: 0x%x at 0x%lx\n", instr, vm->ip);
